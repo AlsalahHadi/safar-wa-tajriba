@@ -8,11 +8,13 @@
  The planner then hides any restaurant under 4.0 on Google, and any activity
  under 4.0 on TripAdvisor, whenever that place has at least 50 reviews.
  Places with fewer than 50 reviews are kept (the rule does not apply to them).
- Places that could not be matched stay "unverified" and are hidden once any ratings exist.
+ Places without a rating are shown with no tag; they are not filtered until a rating is loaded.
  Hotels show a Booking.com score (out of 10) as a tag only; it comes from tools/booking_ratings.json.
 
  Usage (Node 18+):
    GOOGLE_PLACES_API_KEY=... TRIPADVISOR_API_KEY=... node tools/update_ratings.mjs
+   Booking.com scores from a spreadsheet (columns: name,score,reviews; see tools/booking_template.csv):
+   node tools/update_ratings.mjs --booking-csv=tools/booking_template.csv --only=none
    options: --only=restaurants | --only=activities   --dry (no file written)   --file=path/to/index.html
 
  Notes: check Google Maps Platform / TripAdvisor terms about storing and displaying ratings
@@ -67,14 +69,18 @@ async function tripadvisorRating(name, city, key, fetchFn){
 async function pool(items, n, fn){ const out = []; let i = 0;
   await Promise.all(Array.from({length: n}, async () => { while (i < items.length) { const k = i++; out[k] = await fn(items[k]); } })); return out; }
 
-export async function run({file, only, dry, env = process.env, fetchFn = fetch, log = console.log}){
+export async function run(opts){ const {file, only, dry, env = process.env, fetchFn = fetch, log = console.log} = opts;
   let html = fs.readFileSync(file, "utf8");
   const {restaurants, activities} = loadVenues(html);
   const cur = JSON.parse(html.slice(html.indexOf(START) + START.length, html.indexOf(END)).replace(/^const RTD=/, "").replace(/;$/, "") || "{}");
   const RTD = {...cur}; let ok = 0, miss = 0, fail = 0;
   const jobs = [];
-  if (only !== "activities") { if (!env.GOOGLE_PLACES_API_KEY) throw new Error("GOOGLE_PLACES_API_KEY is not set"); for (const [n, c] of restaurants) jobs.push(["g", n, c]); }
-  if (only !== "restaurants") { if (!env.TRIPADVISOR_API_KEY) throw new Error("TRIPADVISOR_API_KEY is not set"); for (const [n, c] of activities) jobs.push(["t", n, c]); }
+  if (opts.bookingCsv) { const rows = fs.readFileSync(opts.bookingCsv, "utf8").split(/\r?\n/).slice(1).filter(Boolean); const B = {}; let nb = 0;
+    for (const line of rows) { const c = line.match(/("([^"]|"")*"|[^,]*)(,|$)/g).map(x => x.replace(/,$/, "").replace(/^"|"$/g, "").replace(/""/g, '"')); const sc = parseFloat(c[2]), rv = parseInt(String(c[3] || "0").replace(/[^0-9]/g, ""), 10) || 0;
+      if (c[0] && sc > 0 && sc <= 10) { B[c[0]] = [sc, rv]; nb++; } }
+    fs.writeFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), "booking_ratings.json"), JSON.stringify(B, null, 1)); log(`booking csv: ${nb} hotel scores imported`); }
+  if (only !== "activities" && only !== "none") { if (!env.GOOGLE_PLACES_API_KEY) throw new Error("GOOGLE_PLACES_API_KEY is not set"); for (const [n, c] of restaurants) jobs.push(["g", n, c]); }
+  if (only !== "restaurants" && only !== "none") { if (!env.TRIPADVISOR_API_KEY) throw new Error("TRIPADVISOR_API_KEY is not set"); for (const [n, c] of activities) jobs.push(["t", n, c]); }
   await pool(jobs, 4, async ([k, n, c]) => {
     try {
       const v = k == "g" ? await googleRating(n, c, env.GOOGLE_PLACES_API_KEY, fetchFn) : await tripadvisorRating(n, c, env.TRIPADVISOR_API_KEY, fetchFn);
@@ -95,6 +101,6 @@ export async function run({file, only, dry, env = process.env, fetchFn = fetch, 
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
   const arg = n => (process.argv.find(a => a.startsWith("--" + n + "=")) || "").split("=")[1];
-  run({file: arg("file") || path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "index.html"), only: arg("only"), dry: process.argv.includes("--dry")})
+  run({bookingCsv: arg("booking-csv"), file: arg("file") || path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "index.html"), only: arg("only"), dry: process.argv.includes("--dry")})
     .catch(e => { console.error(e.message); process.exit(1); });
 }

@@ -397,24 +397,104 @@ function hotelsFor(dest,lv){return DST[dest].h.slice(lv*3,lv*3+3);}
 const hmid=h=>(h[1]+h[2])/2;
 function avgNight(dest,lv){const l=hotelsFor(dest,lv);return l.reduce((s,h)=>s+hmid(h),0)/3;}
 function lvRange(dest,lv){const l=hotelsFor(dest,lv);return [Math.min(...l.map(h=>h[1])),Math.max(...l.map(h=>h[2]))];}
-/* build itinerary: items per day with real venues, driven by travel mode + chosen interests */
-function buildPlan(b,mode){const d=DST[b.dest],c=d.c,lv=+b.stay,hs=hotelsFor(b.dest,lv),nights=Math.max(1,b.days-1),share=lv==0?1:2;
+/* ===== PLANNER v2: breakfast/lunch lists per destination+mode, activity durations, timed day builder, halal preference ===== */
+/* MEALS[dest][mode] = [breakfasts x3, lunches x3]; each [name, cuisine, avg per person USD]. Dinners stay in DST[dest].r */
+const MEALS={
+"إنجلترا":{
+luxury:[[["Claridge's Foyer & Reading Room","فطور فاخر",55],["The Savoy Thames Foyer","فطور إنجليزي",50],["Fortnum & Mason The Diamond Jubilee Tea Salon","فطور وشاي",45]],[["Scott's Mayfair","مأكولات بحرية",110],["Hakkasan Hanway Place","صيني راقٍ",90],["Nobu Berkeley Street","ياباني",120]]],
+budget:[[["Beigel Bake Brick Lane","بيغل",6],["E Pellicci","فطور إنجليزي",12],["Monmouth Coffee Company Borough","قهوة ومعجنات",8]],[["Padella Borough Market","معكرونة",18],["Mildreds Soho","نباتي",22],["Seven Dials Market","طعام شوارع",15]]],
+family:[[["Granger & Co Notting Hill","فطور أسترالي",25],["Bill's Covent Garden","فطور عائلي",22],["Ottolenghi Spitalfields","فطور متوسطي",22]],[["Honest Burgers Soho","برغر",20],["Flat Iron Covent Garden","ستيك",22],["Carluccio's Covent Garden","إيطالي عائلي",25]]],
+corporate:[[["Duck & Waffle","فطور على مدار الساعة",35],["The Delaunay","فطور فييني",35],["Caravan King's Cross","فطور عصري",28]],[["Brasserie of Light","براسري",50],["Coq d'Argent","فرنسي",70],["Rules Restaurant","بريطاني تقليدي",75]]]},
+"الولايات المتحدة":{
+luxury:[[["Sant Ambroeus Madison Avenue","فطور إيطالي",35],["The Mark Restaurant by Jean-Georges","فطور راقٍ",45],["Russ & Daughters Café","سمك مدخن وبيغل",35]],[["The Grill New York","أمريكي راقٍ",120],["Marea New York","إيطالي مأكولات بحرية",120],["Nobu Downtown New York","ياباني",110]]],
+budget:[[["Absolute Bagels","بيغل",8],["Ess-a-Bagel","بيغل",9],["Birdbath Bakery","معجنات",8]],[["Xi'an Famous Foods","نودلز صينية",12],["Chelsea Market","قاعة طعام",15],["The Halal Guys 53rd and 6th","شاورما حلال",10]]],
+family:[[["Clinton St. Baking Company","بانكيك",25],["Sarabeth's Central Park South","فطور",28],["Peter Pan Donut & Pastry Shop","دونات",8]],[["Junior's Restaurant Times Square","كعك وأمريكي",30],["Carmine's Times Square","إيطالي عائلي",35],["Bubba Gump Shrimp Co. Times Square","مأكولات بحرية",30]]],
+corporate:[[["Eisenberg's Sandwich Shop","فطور سريع",12],["Balthazar New York","فطور فرنسي",35],["The Smith Midtown","فطور أمريكي",30]],[["Cipriani Dolci Grand Central","إيطالي",50],["Grand Central Oyster Bar","مأكولات بحرية",55],["Cafe Boulud New York","فرنسي",70]]]},
+"كندا":{
+luxury:[[["Café Boulud Toronto","فطور راقٍ",40],["Sassafraz Yorkville","فطور",35],["The Hazelton Hotel Café Toronto","فطور",38]],[["Barberian's Steak House","ستيك",90],["Bar Isabel Toronto","إسباني",65],["Edulis Toronto","متوسطي معاصر",110]]],
+budget:[[["Dineen Coffee Co.","قهوة ومعجنات",8],["Fran's Restaurant Toronto","فطور",12],["Sam James Coffee Bar","قهوة",7]],[["Seven Lives Tacos","تاكو",12],["Queen Mother Café","تايلندي وكندي",16],["Spadina Chinatown Toronto","مأكولات صينية",12]]],
+family:[[["Eggspectation Toronto","فطور",18],["Sunset Grill Toronto","فطور",16],["Aunties and Uncles Toronto","فطور منزلي",16]],[["Rodney's Oyster House","مأكولات بحرية",45],["Pai Northern Thai Kitchen","تايلندي",25],["Gusto 101","إيطالي",40]]],
+corporate:[[["Richmond Station Toronto","فطور",25],["Merchant Tavern Toronto","فطور",30],["Balzac's Coffee Distillery","قهوة وفطور خفيف",10]],[["Hy's Steakhouse Toronto","ستيك",85],["The Carbon Bar","شواء",50],["Pearl Diver Toronto","مأكولات بحرية",50]]]},
+"فرنسا":{
+luxury:[[["Café de la Paix","فطور فاخر",50],["Ladurée Royale","فطور ومعجنات",35],["Hôtel Costes","فطور",50]],[["Le Jules Verne","فرنسي",150],["Girafe Paris","مأكولات بحرية",110],["Monsieur Bleu","فرنسي",70]]],
+budget:[[["Du Pain et des Idées","معجنات",8],["Maison Kayser","معجنات",8],["Café Oberkampf","فطور",18]],[["Bouillon Pigalle","فرنسي تقليدي",20],["Le Petit Vendôme","ساندويتشات",12],["Marché Mouffetard","سوق شارع",12]]],
+family:[[["Café Marlette","فطور",20],["Le Pain Quotidien Paris","فطور",18],["Holybelly 5","فطور",22]],[["Le Relais de l'Entrecôte Saint-Germain","ستيك وبطاطس",35],["Big Mamma Pink Mamma","إيطالي",35],["Café de Flore","مقهى كلاسيكي",35]]],
+corporate:[[["Fouquet's Paris","فطور",40],["Café Verlet","قهوة وفطور",18],["Eggs & Co Paris","فطور",25]],[["Le Comptoir du Relais","براسري",50],["Brasserie Bofinger","براسري",55],["Le Procope","فرنسي تاريخي",55]]]},
+"هولندا":{
+luxury:[[["Jansz. at Pulitzer Amsterdam","فطور راقٍ",45],["Brasserie Ambassade","فطور",30],["Café de Jaren","فطور",20]],[["Restaurant Bridges Amsterdam","مأكولات بحرية",80],["Sinne Amsterdam","هولندي معاصر",75],["Restaurant Blauw Amsterdam","إندونيسي",50]]],
+budget:[[["Bakers & Roasters","فطور",15],["Winkel 43","فطور وفطيرة التفاح",12],["Lanskroon Amsterdam","معجنات",8]],[["Vlaams Friteshuis Vleminckx","بطاطس",5],["Broodje Bert","ساندويتش",8],["Maoz Falafel Amsterdam","فلافل نباتي",7]]],
+family:[[["Pannenkoekenhuis Upstairs","بانكيك",14],["Bagels & Beans Amsterdam","فطور",12],["The Breakfast Club Amsterdam","فطور",16]],[["Hap Hmm Amsterdam","هولندي منزلي",15],["Pasta e Basta Amsterdam","إيطالي",35],["Burgermeester Amsterdam","برغر",20]]],
+corporate:[[["Coffee & Coconuts","فطور",16],["Staring at Jacob","فطور",15],["Little Collins Amsterdam","فطور أسترالي",16]],[["Restaurant De Kas","محلي موسمي",55],["Loetje Amsterdam","ستيك",30],["Brasserie Schiller","براسري",45]]]},
+"سويسرا":{
+luxury:[[["Pâtisserie Auer Geneva","معجنات وشوكولاتة",12],["Café Remor Geneva","فطور",15],["Confiserie Rohr Geneva","معجنات",12]],[["Auberge du Lion d'Or Cologny","فرنسي",120],["Le Relais de l'Entrecôte Genève","ستيك وبطاطس",45],["La Perle du Lac Geneva","فرنسي على البحيرة",95]]],
+budget:[[["Manora Geneva","كافيتريا",18],["Buvette des Bains des Pâquis","فطور بسيط",12],["Le Pain Quotidien Rive Geneva","فطور",16]],[["Les Bains des Pâquis Geneva","فوندو بسعر معتدل",25],["Coop Restaurant Geneva","كافيتريا",14],["Marché de Rive Geneva","سوق",12]]],
+family:[[["Café Remor Geneva","فطور",15],["Pâtisserie Auer Geneva","معجنات",12],["Manora Geneva","كافيتريا",18]],[["Manora Geneva","كافيتريا",18],["Les Bains des Pâquis Geneva","فوندو بسعر معتدل",25],["Coop Restaurant Geneva","كافيتريا",14]]],
+corporate:[[["Le Pain Quotidien Rive Geneva","فطور",16],["Café Remor Geneva","فطور",15],["Pâtisserie Auer Geneva","معجنات",12]],[["Brasserie Lipp Genève","براسري",65],["Café du Centre Geneva","براسري",60],["Le Parc des Eaux-Vives","فرنسي",95]]]},
+"النمسا":{
+luxury:[[["Café Imperial Vienna","فطور فيينّي فاخر",40],["Café Demel","فطور ومعجنات",25],["Café Hawelka","فطور",20]],[["Meinl am Graben","نمساوي",70],["Restaurant Hansen Vienna","نمساوي حديث",55],["Das Loft Sofitel Vienna","حديث بإطلالة",75]]],
+budget:[[["Café Prückel","فطور",12],["Aida Konditorei","معجنات",6],["Bäckerei Ströck","مخبوزات",6]],[["Trzesniewski","ساندويتشات",8],["Naschmarkt Deli","شاورما وطعام سوق",12],["Schnitzelwirt Schmidt","شنيتزل",16]]],
+family:[[["Café Sperl","فطور وكعك",15],["Café Mozart Vienna","فطور",20],["Café Frauenhuber","فطور",18]],[["Gasthaus Pöschl","نمساوي",30],["Wiener Rathauskeller","نمساوي",35],["Gasthaus Wild Vienna","نمساوي",30]]],
+corporate:[[["Kaffee Alt Wien","فطور",15],["Café Museum Vienna","فطور",18],["Café Savoy Vienna","فطور",16]],[["Meixner's Gastwirtschaft","نمساوي",45],["Restaurant Ofenloch","نمساوي تقليدي",40],["Reinthaler's Beisl","نمساوي",30]]]},
+"إيطاليا":{
+luxury:[[["Stravinskij Bar Hotel de Russie","فطور راقٍ",50],["Antico Caffè Greco","قهوة تاريخية",15],["Caffè Rosati","فطور",18]],[["Il Convivio Troiani","إيطالي",90],["Pierluigi Rome","مأكولات بحرية",70],["Glass Hostaria Rome","حديث",110]]],
+budget:[[["Sant'Eustachio Il Caffè","قهوة وكورنيتو",6],["Roscioli Caffè Pasticceria","معجنات",7],["Bar San Calisto","قهوة",5]],[["Forno Campo de' Fiori","بيتزا بيضاء",6],["Mercato Testaccio","سوق طعام",12],["Pasticceria Regoli","معجنات",6]]],
+family:[[["Barnum Café Rome","فطور",12],["Marigold Rome","فطور",18],["Pasticceria Boccione","معجنات",6]],[["Pizzeria Ai Marmi","بيتزا",20],["Trattoria Da Danilo","روماني",35],["Da Francesco Rome","بيتزا ومعكرونة",25]]],
+corporate:[[["Faro Luminari del Caffè","قهوة وفطور",12],["Barnum Café Rome","فطور",12],["Caffè Rosati","فطور",18]],[["Dal Bolognese Rome","إيطالي",70],["Ristorante Settembrini","حديث",55],["Roscioli Salumeria Rome","إيطالي",50]]]},
+"تركيا":{
+luxury:[[["Çırağan Palace Kempinski Breakfast","فطور فاخر على البوسفور",55],["Mandarin Oriental Bosphorus Breakfast","فطور فاخر",50],["Mangerie Cihangir","فطور",25]],[["Tugra Restaurant","عثماني راقٍ",100],["Spago Istanbul","عالمي",90],["Sunset Grill & Bar Istanbul","عالمي",90]]],
+budget:[[["Van Kahvaltı Evi","فطور تركي",12],["Simit Sarayı","سميط ومعجنات",3],["Namlı Gurme","فطور",14]],[["Çiya Sofrası","أطباق أناضولية",15],["Sultanahmet Köftecisi Selim Usta","كفتة",8],["Dürümzade","دورم",6]]],
+family:[[["Journey Cihangir","فطور",20],["Mangerie Cihangir","فطور",25],["Van Kahvaltı Evi","فطور تركي",12]],[["Matbah Restaurant Istanbul","عثماني",40],["Balıkçı Sabahattin","مأكولات بحرية",50],["Hacı Abdullah","مطبخ عثماني",25]]],
+corporate:[[["The House Café Ortaköy","فطور",25],["Kronotrop Coffee","قهوة",8],["Federal Galata","فطور",20]],[["Nusr-Et Steakhouse Etiler","ستيك",110],["Mimolett Istanbul","متوسطي",70],["Hünkar Istanbul","عثماني",30]]]}
+};
+/* activity durations in hours, keyed by the Maps name */
+const DUR={"The Ritz London Palm Court":1.5,"Royal Opera House":3,"Harrods":2,"British Museum":2.5,"Tower Bridge":1,"Camden Market":2,"Warner Bros. Studio Tour London":4,"London Eye":1,"Natural History Museum London":2.5,"Sky Garden London":1.5,"Tower of London":3,"Shakespeare's Globe":2,
+"Liberty Helicopters New York":1,"Metropolitan Opera":3,"Fifth Avenue New York":2.5,"Staten Island Ferry":1.5,"Central Park":2.5,"The High Line":1.5,"Statue of Liberty":4,"American Museum of Natural History":3,"Top of the Rock":1.5,"Empire State Building":1.5,"Wall Street New York":1.5,"Broadway Theater District New York":3,
+"Niagara Helicopters":6,"Yorkville Toronto":2,"Four Seasons Centre for the Performing Arts":2.5,"Kensington Market":2,"Toronto Islands":4,"Royal Ontario Museum":3,"CN Tower":1.5,"Ripley's Aquarium of Canada":2.5,"Niagara Falls Ontario":8,"Scotiabank Arena":3,"Distillery Historic District":2,
+"Bateaux Parisiens":1.5,"Avenue Montaigne Paris":2,"Louvre Museum":3.5,"Sacré-Cœur Basilica":2,"Pont des Arts":1,"Notre-Dame de Paris":1.5,"Disneyland Paris":8,"Eiffel Tower":2,"Jardin du Luxembourg":1.5,"Musée d'Orsay":3,"Palace of Versailles":5,"Bateaux Mouches":1.5,
+"Private canal cruise Amsterdam":1.5,"Rijksmuseum":3,"PC Hooftstraat Amsterdam":2,"MacBike Amsterdam":3,"Van Gogh Museum":2.5,"Albert Cuyp Market":1.5,"NEMO Science Museum":3,"Keukenhof":5,"Amsterdam canal cruise":1.5,"Anne Frank House":1.5,"Heineken Experience":2,"Jordaan Amsterdam":2,
+"CGN Lake Geneva boat":2,"Patek Philippe Museum":2,"La Réserve Genève Spa":3,"Jet d'Eau Geneva":1,"Cathédrale Saint-Pierre Geneva":1.5,"Jardin Anglais Geneva":1,"Muséum d'histoire naturelle de Genève":2.5,"Salève cable car Geneva":3,"Lake Geneva boat Montreux":5,"United Nations Office at Geneva":2,"Quai Wilson Geneva":1.5,
+"Vienna State Opera":3,"Schönbrunn Palace":3,"Kärntner Straße Vienna":2,"Belvedere Vienna":2,"St. Stephen's Cathedral Vienna":1.5,"Donauinsel Vienna":2.5,"Tiergarten Schönbrunn":3,"Wiener Riesenrad":1.5,"Naturhistorisches Museum Wien":2.5,"Hofburg Vienna":2.5,"MuseumsQuartier Wien":2.5,"Vienna Musikverein":2.5,
+"Vatican Museums":4,"Via Condotti Rome":2,"Terme di Caracalla":3,"Colosseum Rome":3,"Trevi Fountain":1,"Pantheon Rome":1,"Villa Borghese Rome":2.5,"Explora Il Museo dei Bambini di Roma":2.5,"Castel Sant'Angelo":2,"Giardino degli Aranci":1,
+"Bosphorus private yacht cruise Istanbul":3,"Çemberlitaş Hamamı":2,"Grand Bazaar Istanbul":2.5,"Hagia Sophia":1.5,"Şehir Hatları Bosphorus ferry Istanbul":2,"Spice Bazaar Istanbul":1.5,"Topkapı Palace":3,"Bosphorus Cruise Istanbul":2,"Miniaturk Istanbul":2,"Blue Mosque Istanbul":1,"Galata Tower":1.5,"Basilica Cistern":1};
+const durOf=n=>DUR[n]||2;
+const dTxt=h=>{if(h==1.25)return"ساعة وربع";if(h==1.75)return"ساعة و45 دقيقة";if(h<=0.5)return"نصف ساعة";if(h==1)return"ساعة";if(h==1.5)return"ساعة ونصف";if(h==2)return"ساعتان";if(h==2.5)return"ساعتان ونصف";if(h==3)return"3 ساعات";if(h==3.5)return"3 ساعات ونصف";if(h>=4&&h<=10&&Number.isInteger(h))return h+(h<=10?" ساعات":" ساعة");return h+" ساعات";};
+const T2=m=>String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+/* halal tier: 2 = mostly halal (Turkey), 1 = halal/vegetarian/seafood options likely, 0 = ask first */
+const HL1=/هندي|فلافل|كباب|تركي|عثماني|بيتزا|بانكيك|كريب|معجنات|بيغل|قهوة|حلويات|فطور|شوكولاتة|جيلاتو|سوق|قاعة طعام|دونات|سميط|بقلاوة|مقهى|معكرونة|نباتي|بحرية|سمك|فوندو|كافيتريا|كعك|حلال|شاورما|دورم|كفتة|أناضول|متوسطي|مخبوزات|تاكو|نودلز|تايلندي|فيتنامي|بطاطس|عثماني/;
+const halalTier=(cu,dest)=>dest=="تركيا"?2:HL1.test(cu)?1:0;
+const HLT=["اسأل عن الحلال","خيارات حلال/نباتية (تحقق)","لحوم حلال غالباً"];
+function mealList(dest,mode,kind,halal){const d=DST[dest],ii=kind=="b"?0:1,own=kind=="d"?d.r[mode]:MEALS[dest][mode][ii],nx=kind=="d"?d.r[NEXT[mode]]:MEALS[dest][NEXT[mode]][ii];
+let l=[...own,...nx].filter((v,i,a)=>a.findIndex(z=>z[0]==v[0])==i);
+if(halal)l=l.map((v,i)=>[v,i]).sort((p,q)=>halalTier(q[0][1],dest)-halalTier(p[0][1],dest)||p[1]-q[1]).map(p=>p[0]);
+return l;}
+/* timed itinerary: breakfast, activities (with durations), lunch, dinner; 30 min travel buffer between stops */
+function buildPlan(b,mode){const d=DST[b.dest],c=d.c,lv=+b.stay,hs=hotelsFor(b.dest,lv),nights=Math.max(1,b.days-1),share=lv==0?1:2,halal=!!b.halal;
 const own=d.x[mode].slice(),rest=[];[NEXT[mode]].concat(MODES.filter(m=>m!=mode&&m!=NEXT[mode])).forEach(m=>d.x[m].forEach(a=>{if(![...own,...rest].some(z=>z[1]==a[1]))rest.push(a);}));
 const want=b.acts.filter(a=>a!="طعام"),pref=own.filter(a=>want.includes(a[2])),oth=own.filter(a=>!want.includes(a[2])),pref2=rest.filter(a=>want.includes(a[2])),oth2=rest.filter(a=>!want.includes(a[2]));
-const pool=(want.length?[...pref,...oth,...pref2,...oth2]:[...own,...rest]);
-const food=d.r[mode].concat(d.r[NEXT[mode]]),wantFood=b.acts.includes("طعام");
-const per=+b.pace+1,sl=["صباحاً","ظهراً","مساءً"];let ai=0,fi=0;const days=[];
-for(let i=0;i<b.days;i++){const it=[],first=i==0,last=i==b.days-1;
-if(first)it.push({k:"stay",t:"عند الوصول",n:hs[0][0],v:hs[0]});
-let n=first?(per>=3?1:0):last?(per>=2?1:0):per;
-for(let j=0;j<n;j++){const a=pool[ai++%pool.length];it.push({k:"act",t:sl[first||last?0:j],n:a[1],ar:a[0],cat:a[2],u:a[3],ex:!own.includes(a)});}
-if(wantFood&&!last){const r=food[fi++%food.length];it.push({k:"food",t:"عشاء",n:r[0],cu:r[1],u:r[2],tag:r[3]});}
+const pool=(want.length?[...pref,...oth,...pref2,...oth2]:[...own,...rest]),wantFood=b.acts.includes("طعام");
+const B=mealList(b.dest,mode,"b",halal),Lh=mealList(b.dest,mode,"l",halal),Dn=mealList(b.dest,mode,"d",halal);
+const maxA=+b.pace+1;let ai=0,bi=0,li=0,di=0;const days=[],used=new Set();
+const meal=(kind,list,i,t,dur)=>{const r=list[i%list.length];return{k:"food",m:kind,time:t,dur,n:r[0],cu:r[1],u:r[2],tag:r[3],hl:halalTier(r[1],b.dest)};};
+const nextAct=(maxH)=>{for(let k=0;k<pool.length;k++){const a=pool[(ai+k)%pool.length];if(!used.has(a[1])&&durOf(a[1])<=maxH){ai=(ai+k+1)%pool.length;used.add(a[1]);return a;}}for(let k=0;k<pool.length;k++){const a=pool[(ai+k)%pool.length];if(durOf(a[1])<=maxH){ai=(ai+k+1)%pool.length;return a;}}return null;};
+for(let i=0;i<b.days;i++){const it=[],first=i==0,last=i==b.days-1;let t=first?13*60:8*60,acts=0,lunch=false;if(i%Math.max(1,pool.length)==0)used.clear();
+if(first){it.push({k:"stay",time:T2(t),dur:0.5,n:hs[0][0],v:hs[0]});t+=60;}
+else if(wantFood){it.push(meal("b",B,bi++,T2(t),1));t+=60+15;}else t=9*60;
+const place=(maxEnd)=>{while(acts<maxA){const full=!first&&!last&&acts==0&&t<=10*60;const a=nextAct((maxEnd-t)/60);if(!a)break;const h=durOf(a[1]);if(t+h*60>maxEnd&&!(full&&h>=5))break;
+if(wantFood&&!lunch&&h<5&&(t>=12*60||t+h*60>13*60+30)){const lt=Math.max(t,12*60);if(lt+90+h*60>maxEnd+60&&t<12*60){/*activity first if lunch would crowd out*/}else{it.push(meal("l",Lh,li++,T2(lt),1.25));t=lt+90;lunch=true;if(t+h*60>maxEnd)break;}}
+it.push({k:"act",time:T2(t),dur:h,n:a[1],ar:a[0],cat:a[2],u:a[3],ex:!own.includes(a)});
+if(wantFood&&!lunch&&h>=5){const m2=meal("l",Lh,li++,T2(Math.round((t+Math.min(4,h/2)*60)/15)*15),1.25);m2.nt=1;it.push(m2);lunch=true;}
+t+=h*60+30;acts++;if(h>=5)break;}};
+if(first){if(wantFood){it.push(meal("l",Lh,li++,T2(t),1.25));t+=75+15;lunch=true;}place(18*60+30);}
+else if(last){place(12*60);if(wantFood){const lt=Math.max(t,12*60);it.push(meal("l",Lh,li++,T2(lt),1.25));}}
+else{place(18*60+30);if(wantFood&&!lunch){const lt=Math.max(12*60+15,Math.min(t,14*60));it.splice(it.findIndex(x=>x.k=="act"&&x.time>=T2(lt))<0?it.length:it.findIndex(x=>x.k=="act"&&x.time>=T2(lt)),0,meal("l",Lh,li++,T2(lt),1.25));}}
+if(wantFood&&!last)it.push(meal("d",Dn,di++,"19:30",1.75));
+it.sort((x,y)=>x.time<y.time?-1:x.time>y.time?1:0);
 days.push({t:first?`الوصول إلى ${d.a}`:last?"اليوم الأخير والمغادرة":`استكشاف ${d.a}`,it});}
-const act=days.reduce((s,x)=>s+x.it.filter(y=>y.k=="act").reduce((q,y)=>q+y.u,0),0),fd=days.reduce((s,x)=>s+x.it.filter(y=>y.k=="food").reduce((q,y)=>q+y.u,0),0),ht=avgNight(b.dest,lv)*nights/share;
-return{days,hs,nights,share,c,a:d.a,act,fd,ht,tot:act+fd+ht,lv};}
+const sum=f=>days.reduce((s,x)=>s+x.it.filter(f).reduce((q,y)=>q+y.u,0),0),act=sum(y=>y.k=="act"),fd=sum(y=>y.k=="food"),ht=avgNight(b.dest,lv)*nights/share;
+return{days,hs,nights,share,c,a:d.a,act,fd,ht,tot:act+fd+ht,lv,halal};}
 
 const AD={"التنقل من وإلى المطار":80,"تأمين السفر":60,"جولة يومية بمرشد":120,"جلسة سبا":90},TR=[["نُزل",25],["3 نجوم",85],["4 نجوم",150],["5 نجوم",340]];
-const S={lm:"luxury",p:"luxury",cur:"SAR",f:{d:"",dt:"",g:2,st:"any"},ti:0,sub:"",ad:{},b:{step:0,dest:"إيطاليا",days:5,pace:1,stay:"2",acts:["ثقافة","طعام"],pl:null}};
+const S={lm:"luxury",p:"luxury",cur:"SAR",f:{d:"",dt:"",g:2,st:"any"},ti:0,sub:"",ad:{},b:{step:0,dest:"إيطاليا",days:5,pace:1,stay:"2",acts:["ثقافة","طعام"],halal:false,pl:null}};
 const fmt=n=>Math.round(n*RT[S.cur].r).toLocaleString("en-US")+" "+RT[S.cur].a;
 const stars=n=>"★".repeat(Math.round(n))+"☆".repeat(5-Math.round(n));
 function setP(id){S.p=id;if(id!="education"){S.lm=id;if(S.b&&S.b.step==3&&S.b.pl)setTimeout(gen,0);}const p=P[id],r=document.documentElement;for(const k in p.v)r.style.setProperty("--"+k,p.v[k]);r.style.setProperty("--r",p.r);r.style.setProperty("--g",p.g||"var(--ac)");r.style.colorScheme=p.cs;
@@ -431,15 +511,20 @@ const O=(a,sel,act,lab)=>`<div class="opts">${a.map(x=>`<button aria-pressed="${
 let h=`<div class="st">${sn.map((x,i)=>`<span class="${i==b.step?"on":""}">${i+1}. ${x}</span>`).join("")}</div>`;
 if(b.step==0)h+=`<b>إلى أين تذهب؟</b>`+O(D,x=>x==b.dest,"bd",x=>`${x} — ${DST[x].a}`)+`<label style="max-width:280px">مدة الرحلة: ${b.days} أيام<input type="range" min="2" max="10" value="${b.days}" id="bdy"></label>`;
 if(b.step==1)h+=`<b>ما مدى امتلاء أيامك بالأنشطة؟</b>`+O(["0","1","2"],x=>x==b.pace,"bp",x=>["هادئ","متوازن","مكثف"][x])+`<b>أين تريد الإقامة؟</b>`+O(["0","1","2","3","4"],x=>x==b.stay,"bs",x=>{const r=lvRange(b.dest,+x);return `${LV[x]} · ${fmt(r[0])} – ${fmt(r[1])} لليلة`})+`<p class="mu" style="margin:-8px 0 8px;font-size:.85rem">أسعار تقريبية لفنادق مقترحة في ${DST[b.dest].a}.</p>`;
-if(b.step==2)h+=`<b>ما الذي تستمتع به؟ اختر ما شئت.</b>`+O(ACTS,x=>b.acts.includes(x),"ba");
+if(b.step==2)h+=`<b>ما الذي تستمتع به؟ اختر ما شئت.</b>`+O(ACTS,x=>b.acts.includes(x),"ba")+`<b>تفضيلات الطعام</b><div class="opts"><button aria-pressed="${!!b.halal}" data-a="bh">🥩 أفضّل المطاعم الحلال</button></div><p class="mu" style="margin:-8px 0 8px;font-size:.85rem">عند التفعيل نقدّم المطاعم ذات الخيارات الحلال أولاً مع إشارة لكل مطعم؛ تحقّق من الحلال مع المطعم قبل الحجز.</p>`;
 if(b.step==3&&b.pl){const p=b.pl,m=S.lm;b.tot=p.tot;
 const hc=h=>`<div class="card" style="padding:14px"><b>${h[0]}</b>${h[3]?` <span class="chip">${h[3]}</span>`:""}<div class="mu">${fmt(h[1])} – ${fmt(h[2])} لليلة (تقريباً)</div><div>${lk(h[0],p.c)}</div></div>`;
 const L=(ic,t,n,x,u,tag,ex,c)=>`<li style="margin-bottom:8px">${ic} <b>${t}:</b> ${x}${n?` <span class="mu">(${n})</span>`:""}${u!=null?` — ${u?fmt(u):"مجاني"}`:""}${tag?` <span class="chip">${tag}</span>`:""}${ex?` <span class="mu">· اقتراح إضافي</span>`:""}<br>${lk(n||x,c)}</li>`;
-h+=`<div class="two" style="align-items:center;margin-bottom:16px"><div><b>نمط السفر: ${P[m].n}</b><br><span class="mu">الفنادق والمطاعم والأنشطة تتغيّر مع النمط؛ غيّره من الشريط العلوي لتتحدّث الاقتراحات.</span></div><div><span class="mu">الميزانية التقديرية للشخص (دون الطيران)</span><div class="tot" style="font-size:2rem">${fmt(p.tot)}</div><span class="mu">الإقامة ${fmt(p.ht)} · الأنشطة ${fmt(p.act)} · المطاعم ${fmt(p.fd)}</span></div></div>`;
+h+=`<div class="two" style="align-items:center;margin-bottom:16px"><div><b>نمط السفر: ${P[m].n}</b><br><span class="mu">الفنادق والمطاعم والأنشطة تتغيّر مع النمط؛ غيّره من الشريط العلوي لتتحدّث الاقتراحات.</span></div><div><span class="mu">الميزانية التقديرية للشخص (دون الطيران)</span><div class="tot" style="font-size:2rem">${fmt(p.tot)}</div><span class="mu">الإقامة ${fmt(p.ht)} · الأنشطة ${fmt(p.act)} · الوجبات ${fmt(p.fd)}</span></div></div>`;
 h+=`<h3 style="margin:8px 0">أين تقيم: ${LV[p.lv]} في ${p.a}</h3><p class="mu" style="margin:0 0 8px;font-size:.85rem">${p.nights} ليالٍ، ${p.share==2?"بافتراض غرفة لشخصين":"سرير للشخص الواحد"}. الأسعار تقريبية ومتوسطة، وتتغير حسب الموسم والتواريخ.</p><div class="g" style="margin-bottom:16px">${p.hs.map(hc).join("")}</div>`;
 h+=`<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="btn" data-a="bk">احجز البرنامج عبر واتساب</button></div>`;
-h+=p.days.map((d,i)=>{const dc=d.it.reduce((s2,y)=>s2+(y.u||0),0);return `<details${i?"":" open"}><summary><span>اليوم ${i+1}: ${d.t}</span><span class="mu">${fmt(dc)}</span></summary><ul style="list-style:none;padding:8px 0 0;margin:0">${d.it.map(y=>y.k=="stay"?L("🏨",y.t,y.n,"الإقامة في "+y.n,null,y.v[3],0,p.c):y.k=="act"?L("🎟",y.t,y.n,y.ar,y.u,"",y.ex,p.c):L("🍽",y.t,y.n,y.n+" — "+y.cu,y.u,y.tag,0,p.c)).join("")}</ul></details>`}).join("");
-h+=`<p class="mu" style="font-size:.8rem;margin-top:12px">الأسعار تقريبية مبنية على معدلات منشورة وقت الإعداد؛ تحقّق من السعر الحالي عبر الروابط قبل الحجز. تشمل الإقامة والأنشطة والعشاء ولا تشمل الطيران. أسماء المطاعم والفنادق والتقييمات متاحة على خرائط جوجل وTripAdvisor.</p>`;}
+const ML={b:["☕","فطور"],l:["🍽","غداء"],d:["🌙","عشاء"]},hm=y=>p.halal?` <span class="chip">${HLT[y.hl]}</span>`:"";
+const TL=y=>{const t=`<span class="mu" style="display:inline-block;min-width:3.2em;direction:ltr;unicode-bidi:isolate"><b>${y.time}</b></span>`;
+if(y.k=="stay")return `<li style="margin-bottom:10px">${t} 🏨 <b>تسجيل الدخول:</b> ${y.n}${y.v[3]?` <span class="chip">${y.v[3]}</span>`:""}<br>${lk(y.n,p.c)}</li>`;
+if(y.k=="act")return `<li style="margin-bottom:10px">${t} 🎟 <b>${y.ar}</b> <span class="mu">(${y.n}) · المدة التقريبية: ${dTxt(y.dur)}</span> — ${y.u?fmt(y.u):"مجاني"}${y.ex?` <span class="mu">· اقتراح إضافي</span>`:""}<br>${lk(y.n,p.c)}</li>`;
+return `<li style="margin-bottom:10px">${t} ${ML[y.m][0]} <b>${ML[y.m][1]}:</b> ${y.n} <span class="mu">— ${y.cu} · المدة التقريبية: ${dTxt(y.dur)}${y.nt?" · أثناء الجولة":""}</span> — ${fmt(y.u)}${y.tag?` <span class="chip">${y.tag}</span>`:""}${hm(y)}<br>${lk(y.n,p.c)}</li>`;};
+h+=p.days.map((d,i)=>{const dc=d.it.reduce((s2,y)=>s2+(y.u||0),0);return `<details${i?"":" open"}><summary><span>اليوم ${i+1}: ${d.t}</span><span class="mu">${fmt(dc)}</span></summary><ul style="list-style:none;padding:8px 0 0;margin:0">${d.it.map(TL).join("")}</ul></details>`}).join("");
+h+=`<p class="mu" style="font-size:.8rem;margin-top:12px">الأسعار تقريبية مبنية على معدلات منشورة وقت الإعداد؛ تحقّق من السعر الحالي عبر الروابط قبل الحجز. تشمل الإقامة والأنشطة والوجبات (فطور وغداء وعشاء) ولا تشمل الطيران. الأوقات والمدد تقريبية وتتغيّر بحسب الازدحام والحجز المسبق؛ احتُسب نصف ساعة للتنقل بين المحطات. علامات الحلال تقديرية من معلوماتنا العامة وليست شهادة، فتأكد من المطعم مباشرة. أسماء المطاعم والفنادق والتقييمات متاحة على خرائط جوجل وTripAdvisor.</p>`;}
 h+=`<div style="display:flex;justify-content:space-between;margin-top:16px"><button class="btn o" data-a="bb"${b.step?"":" disabled style=opacity:.4"}>رجوع</button>${b.step<2?`<button class="btn" data-a="bn">التالي</button>`:b.step==2?`<button class="btn" data-a="bg">أنشئ برنامج رحلتي</button>`:""}</div>`;
 $("#bw").innerHTML=h;}
 function gen(){const b=S.b;b.pl=buildPlan(b,S.lm);b.step=3;bw();}
@@ -468,9 +553,9 @@ if(c.dataset.p)return setP(c.dataset.p);if(c.dataset.k)return md(c.dataset.k);if
 if(a=="ec")ecGo(c.dataset.v);else if(a=="eq")eqq();else if(a=="open")op();else if(a=="close")cl();else if(a=="mc")$("#md").close();else if(a=="mo"){$("#md").close();op("أرغب في الاستفسار عن: "+S.pk.t);}
 else if(a=="g+"||a=="g-"){S.f.g=Math.min(12,Math.max(1,S.f.g+(a=="g+"?1:-1)));$("#go").textContent=S.f.g;pk();}
 else if(a=="bd"){b.dest=v;bw();}else if(a=="bp"){b.pace=v;bw();}else if(a=="bs"){b.stay=v;bw();}
-else if(a=="ba"){b.acts=b.acts.includes(v)?b.acts.filter(x=>x!=v):[...b.acts,v];bw();}
+else if(a=="bh"){b.halal=!b.halal;bw();}else if(a=="ba"){b.acts=b.acts.includes(v)?b.acts.filter(x=>x!=v):[...b.acts,v];bw();}
 else if(a=="bn"){b.step++;bw();}else if(a=="bb"){b.step--;bw();}else if(a=="bg")gen();
-else if(a=="bk")op(`أرغب في حجز برنامج ${b.dest} (${DST[b.dest].a}) لمدة ${b.days} أيام، نمط ${P[S.lm].n}، ${LV[b.stay]}: ${b.pl.hs.map(x=>x[0]).join("، ")}. الميزانية التقديرية ${fmt(b.tot)} للشخص دون الطيران.`);
+else if(a=="bk")op(`أرغب في حجز برنامج ${b.dest} (${DST[b.dest].a}) لمدة ${b.days} أيام، نمط ${P[S.lm].n}، ${LV[b.stay]}: ${b.pl.hs.map(x=>x[0]).join("، ")}${b.halal?"، مع تفضيل المطاعم الحلال":""}. الميزانية التقديرية ${fmt(b.tot)} للشخص دون الطيران.`);
 else if(a=="nx"||a=="pv"){const n=T.filter(x=>x[1]==S.p).length;S.ti=(S.ti+(a=="nx"?1:-1)+n)%n;tm();}});
 document.addEventListener("change",e=>{const t=e.target;if(t.id=="bdy"){S.b.days=+t.value;S.b.pl=null;bw();}if(t.dataset.ad){S.ad[t.dataset.ad]=t.checked;es();}});
 document.addEventListener("keydown",e=>{if(e.key=="Escape")cl();});

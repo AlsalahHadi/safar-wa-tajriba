@@ -17,3 +17,5 @@ GOOGLE_PLACES_API_KEY=... TRIPADVISOR_API_KEY=... node tools/update_ratings.mjs
 ```
 
 Until ratings are loaded the page shows every venue labelled "rating not verified"; once the table has any data, unverified venues are hidden. Check the Google Maps Platform and TripAdvisor terms on storing/displaying ratings before publishing.
+
+Hotels show a **Booking.com score (out of 10)** tag. Booking.com has no public ratings API, so scores are read from `tools/booking_ratings.json` (`"Hotel name": [score, reviews]`; `tools/hotels.txt` lists all 135 hotel names) and merged by `tools/update_ratings.mjs`.

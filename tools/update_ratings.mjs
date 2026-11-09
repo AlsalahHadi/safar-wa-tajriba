@@ -9,6 +9,7 @@
  under 4.0 on TripAdvisor, whenever that place has at least 50 reviews.
  Places with fewer than 50 reviews are kept (the rule does not apply to them).
  Places that could not be matched stay "unverified" and are hidden once any ratings exist.
+ Hotels show a Booking.com score (out of 10) as a tag only; it comes from tools/booking_ratings.json.
 
  Usage (Node 18+):
    GOOGLE_PLACES_API_KEY=... TRIPADVISOR_API_KEY=... node tools/update_ratings.mjs
@@ -81,6 +82,11 @@ export async function run({file, only, dry, env = process.env, fetchFn = fetch, 
     } catch (e) { fail++; log("failed:", k, n, e.message); }
   });
   log(`done: ${ok} rated, ${miss} unmatched (stay hidden), ${fail} errors; jobs ${jobs.length}`);
+  // Hotels: Booking.com has no public ratings API (only the partner Demand API), so scores come from
+  // tools/booking_ratings.json: {"Hotel name": [score_out_of_10, review_count]} filled from your Booking.com partner data or by hand.
+  try { const bf = path.join(path.dirname(fileURLToPath(import.meta.url)), "booking_ratings.json");
+    if (fs.existsSync(bf)) { const B = JSON.parse(fs.readFileSync(bf, "utf8")); let nb = 0;
+      for (const [n, v] of Object.entries(B)) if (Array.isArray(v) && !n.startsWith("_")) { (RTD[n] ||= {}).b = v; nb++; } log(`hotels: ${nb} Booking.com ratings merged`); } } catch (e) { log("booking_ratings.json:", e.message); }
   const block = START + "const RTD=" + JSON.stringify(RTD) + ";" + END;
   if (!dry) { html = html.slice(0, html.indexOf(START)) + block + html.slice(html.indexOf(END) + END.length); fs.writeFileSync(file, html);
     fs.writeFileSync(path.join(path.dirname(file), "ratings.json"), JSON.stringify(RTD, null, 1)); log("index.html and ratings.json updated"); }

@@ -59,6 +59,7 @@ input[type=range]{accent-color:var(--ac);padding:0;border:0}input[type=checkbox]
 footer{border-top:1px solid var(--ln);padding:28px 0;text-align:center;color:var(--mu);font-size:.9rem}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 .tb{width:100%;border-collapse:collapse;font-size:.88rem}.tb td{border-top:1px solid var(--ln);padding:8px 6px;vertical-align:top;text-align:start}.tb tr:first-child td{border-top:0}dialog{max-height:90vh;overflow:auto}#ec select{margin-top:4px}
+.lk{display:inline-block;font-size:.78rem;border:1px solid var(--ln);border-radius:99px;padding:0 10px;margin-top:4px;margin-inline-end:6px;color:var(--ink);text-decoration:none}.lk:hover{border-color:var(--ac)}
 </style></head><body>
 <header><div class="w hr">
 <a class="brand" href="#top"><img alt="" src="data:image/png;base64,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">سفر وتجربة</a>
@@ -256,12 +257,167 @@ else if(k=="fo")E.fo=+t.value;else if(k=="ac"){E.ac=+t.value;if(E.ac<0){E.hi=fal
 else if(k=="xf")E.xf=+t.value;else if(k=="pv")E.pv=+t.value;else if(["hi","rt","med","diet","minor"].includes(k))E[k]=t.checked;
 else if(k.startsWith("op"))E.op[+k.slice(2)]=t.checked;
 ec();er();const n=document.querySelector('[data-e="'+k+'"]');n&&n.focus();});
-const ACT={"ثقافة":40,"طعام":55,"مغامرة":70,"شاطئ":25,"ترفيه":45,"استجمام":80},STY={"نُزل":20,"3 نجوم":90,"4 نجوم":160,"فيلا":420};
+/* ===== PLANNER DATA: hotels (USD/night per room, dorm bed for hostels), restaurants (USD avg per person), activities (USD per person) ===== */
+const LV=["نُزل / اقتصادي","3 نجوم","4 نجوم","5 نجوم","فيلا / شقة"],MODES=["luxury","budget","family","corporate"],NEXT={luxury:"corporate",corporate:"luxury",family:"budget",budget:"family"};
+const ACTS=["ثقافة","طعام","مغامرة","تسوق","ترفيه","استجمام"];
+const MSN="نجوم ميشلان",PAL="ميشلان: 3 مفاتيح · Palace",TA="Tripadvisor Best of the Best";
+/* hotels: 15 per destination, in groups of 3: hostel/budget, 3*, 4*, 5*, villa/apartment. [name, low, high, tag] */
+/* restaurants: [name, cuisine, avg per person, tag]; activities: [arabic, name for Maps, category, cost] */
+const DST={
+"إنجلترا":{c:"London",a:"لندن",
+h:[["Generator London",30,75],["YHA London Central",35,80],["Safestay London Elephant & Castle",25,65],
+["Premier Inn London County Hall",150,280],["Z Hotel Soho",120,220],["Point A Hotel London Kings Cross St Pancras",90,180],
+["citizenM Tower of London",170,300],["Hotel Indigo London - Paddington",160,280],["The Hoxton, Holborn",190,330],
+["The Savoy",800,1500],["Claridge's",900,1800],["The Dorchester",850,1700],
+["Cheval Three Quays",330,650],["The Apartments by The Sloane Club",300,600],["Citadines Trafalgar Square London",220,400]],
+r:{luxury:[["Core by Clare Smyth","إنجليزي حديث",330,MSN],["Restaurant Gordon Ramsay","فرنسي",280,MSN],["Alain Ducasse at The Dorchester","فرنسي",350,MSN]],
+budget:[["Dishoom Covent Garden","هندي",25],["Borough Market","أكشاك طعام عالمية",15],["Poppies Fish & Chips Spitalfields","سمك وبطاطس",20]],
+family:[["Pizza Pilgrims Covent Garden","بيتزا",20],["Wagamama Leicester Square","آسيوي",22],["The Breakfast Club Soho","فطور وبرغر",22]],
+corporate:[["The Wolseley","براسري كلاسيكي",70],["Hawksmoor Seven Dials","ستيك",85],["Brasserie Zédel","فرنسي",40]]},
+x:{luxury:[["شاي بعد الظهر في ذا ريتز","The Ritz London Palm Court","استجمام",85],["أمسية في دار الأوبرا الملكية","Royal Opera House","ثقافة",130],["تسوّق راقٍ في هارودز","Harrods","تسوق",0]],
+budget:[["المتحف البريطاني (مجاني)","British Museum","ثقافة",0],["المشي على ضفة التيمز وجسر البرج","Tower Bridge","ترفيه",0],["سوق كامدن","Camden Market","تسوق",0]],
+family:[["جولة استوديو هاري بوتر","Warner Bros. Studio Tour London","ترفيه",70],["عجلة لندن آي","London Eye","مغامرة",40],["متحف التاريخ الطبيعي (مجاني)","Natural History Museum London","ثقافة",0]],
+corporate:[["سكاي غاردن (حجز مسبق مجاني)","Sky Garden London","ترفيه",0],["برج لندن","Tower of London","ثقافة",40],["مسرح غلوب شكسبير","Shakespeare's Globe","ثقافة",40]]}},
+"الولايات المتحدة":{c:"New York City",a:"نيويورك",
+h:[["HI NYC Hostel",60,120],["Freehand New York (shared rooms)",80,200],["Chelsea International Hostel",50,110],
+["Luma Hotel Times Square",180,350,TA+" 2025"],["The Wallace",170,330,TA+" 2025"],["Pod Times Square",120,230],
+["The Evelyn Hotel",230,430,TA+" 2025"],["citizenM New York Times Square",190,340],["Hyatt Centric Times Square New York",220,400],
+["The Plaza Hotel",700,1500],["The St. Regis New York",800,1600],["Four Seasons Hotel New York",900,1800],
+["Residence Inn New York Manhattan/Central Park",380,650],["Hotel Beacon",220,420],["Staybridge Suites Times Square",250,450]],
+r:{luxury:[["Le Bernardin","مأكولات بحرية فرنسية",290,MSN],["Eleven Madison Park","حديث",365,MSN],["Jean-Georges","فرنسي حديث",250,MSN]],
+budget:[["Joe's Pizza Greenwich Village","بيتزا بالشريحة",6],["Los Tacos No.1 Chelsea Market","تاكو",12],["Katz's Delicatessen","ساندويتشات",28]],
+family:[["Serendipity 3","حلويات وأمريكي",35],["Shake Shack Madison Square Park","برغر",18],["Ellen's Stardust Diner","مطعم أمريكي بعروض غنائية",30]],
+corporate:[["Gramercy Tavern","أمريكي معاصر",110],["Keens Steakhouse","ستيك",110],["Union Square Cafe","أمريكي",85]]},
+x:{luxury:[["جولة مروحية فوق مانهاتن","Liberty Helicopters New York","مغامرة",250],["أمسية في دار الميتروبوليتان أوبرا","Metropolitan Opera","ثقافة",150],["تسوّق في الجادة الخامسة","Fifth Avenue New York","تسوق",0]],
+budget:[["عبّارة ستاتن آيلاند (مجانية)","Staten Island Ferry","ترفيه",0],["سنترال بارك","Central Park","استجمام",0],["المشي على الهاي لاين","The High Line","ثقافة",0]],
+family:[["تمثال الحرية وجزيرة إليس","Statue of Liberty","ثقافة",25],["المتحف الأمريكي للتاريخ الطبيعي","American Museum of Natural History","ثقافة",30],["قمة الروك (Top of the Rock)","Top of the Rock","ترفيه",40]],
+corporate:[["إمباير ستيت بيلدينغ","Empire State Building","ترفيه",45],["جولة وول ستريت","Wall Street New York","ثقافة",0],["أمسية برودواي","Broadway Theater District New York","ترفيه",130]]}},
+"كندا":{c:"Toronto",a:"تورنتو",
+h:[["Planet Traveler Hostel",35,70],["Bond Place Hotel Toronto",100,180],["Strathcona Hotel Toronto",110,190],
+["Hotel Victoria Toronto",150,240],["Chelsea Hotel Toronto",170,280],["Holiday Inn Toronto Downtown Centre",170,270],
+["1 Hotel Toronto",330,560,"ميشلان: مفتاح واحد"],["Bisha Hotel Toronto",280,500,"ميشلان: مفتاح واحد"],["Hotel X Toronto",230,400],
+["Four Seasons Hotel Toronto at Yorkville",600,1000,"ميشلان: مفتاحان"],["The Hazelton Hotel Toronto",550,950,"ميشلان: مفتاحان"],["The Ritz-Carlton Toronto",600,1000,"ميشلان: مفتاح واحد"],
+["Residence Inn Toronto Downtown/Entertainment District",240,400],["Cambridge Suites Hotel Toronto",190,330],["Executive Hotel Cosmopolitan Toronto",180,320]],
+r:{luxury:[["Alo","فرنسي حديث",230,MSN],["Sushi Masaki Saito","سوشي أوماكاسي",420,MSN],["Canoe","كندي معاصر",120]],
+budget:[["Kensington Market","أسواق ومأكولات عالمية",15],["Banh Mi Boys","فيتنامي",12],["St. Lawrence Market","سوق طعام",18]],
+family:[["Pizzeria Libretto","بيتزا",22],["360 The Restaurant at the CN Tower","مطعم بإطلالة",75],["Kinton Ramen","رامن",20]],
+corporate:[["Buca Yorkville","إيطالي",95],["The Chase Toronto","مأكولات بحرية وستيك",90],["Scaramouche Restaurant","فرنسي معاصر",110]]},
+x:{luxury:[["جولة مروحية فوق شلالات نياغرا","Niagara Helicopters","مغامرة",190],["تسوّق في يورك فيل","Yorkville Toronto","تسوق",0],["أمسية في مركز فور سيزنز للفنون","Four Seasons Centre for the Performing Arts","ثقافة",120]],
+budget:[["سوق كنسينغتون","Kensington Market","تسوق",0],["جزر تورنتو (عبّارة)","Toronto Islands","استجمام",9],["متحف أونتاريو الملكي","Royal Ontario Museum","ثقافة",20]],
+family:[["برج CN","CN Tower","ترفيه",30],["أكواريوم ريبلي كندا","Ripley's Aquarium of Canada","ترفيه",25],["رحلة يوم إلى شلالات نياغرا","Niagara Falls Ontario","مغامرة",85]],
+corporate:[["برج CN","CN Tower","ترفيه",30],["حفل في سكوتيابنك أرينا","Scotiabank Arena","ترفيه",90],["حي ديستيلري التاريخي","Distillery Historic District","ثقافة",0]]}},
+"فرنسا":{c:"Paris",a:"باريس",
+h:[["Generator Paris",35,90],["St Christopher's Inn Gare du Nord",35,85],["Les Piaules",50,120],
+["Hôtel Cluny Square",130,240],["Hôtel Bastille Speria",120,210],["Hôtel Eugène en Ville",140,240],
+["Pullman Paris Tour Eiffel",260,480],["Hôtel Le Walt",220,400],["citizenM Paris Gare de Lyon",140,260],
+["Le Bristol Paris",1300,2500,PAL],["Hôtel Plaza Athénée",1200,2300,PAL],["Cheval Blanc Paris",1800,3500,PAL],
+["Citadines Saint-Germain-des-Prés Paris",220,380],["Adagio Paris Montmartre",160,280],["Résidence Charles Floquet",200,340]],
+r:{luxury:[["Epicure (Le Bristol)","فرنسي",450,MSN],["Le Meurice Alain Ducasse","فرنسي",450,MSN],["Arpège","فرنسي بالخضار",420,MSN]],
+budget:[["L'As du Fallafel","فلافل",12],["Chez Gladines","جنوب غرب فرنسا",20],["Marché des Enfants Rouges","سوق طعام",18]],
+family:[["Breizh Café Marais","كريب",25],["Bouillon Chartier","فرنسي تقليدي",25],["Angelina Paris","شوكولاتة ساخنة وحلويات",20]],
+corporate:[["Brasserie Lipp","براسري",70],["Le Train Bleu","فرنسي كلاسيكي",80],["Le Grand Véfour","فرنسي راقٍ",160]]},
+x:{luxury:[["رحلة نهرية على السين","Bateaux Parisiens","ترفيه",80],["تسوّق في شارع مونتين","Avenue Montaigne Paris","تسوق",0],["متحف اللوفر","Louvre Museum","ثقافة",30]],
+budget:[["مونمارتر وكنيسة القلب المقدس","Sacré-Cœur Basilica","ثقافة",0],["المشي على جسر الفنون","Pont des Arts","استجمام",0],["كاتدرائية نوتردام","Notre-Dame de Paris","ثقافة",0]],
+family:[["ديزني لاند باريس","Disneyland Paris","ترفيه",90],["برج إيفل","Eiffel Tower","مغامرة",35],["حدائق لوكسمبورغ","Jardin du Luxembourg","استجمام",0]],
+corporate:[["متحف أورساي","Musée d'Orsay","ثقافة",18],["قصر فرساي","Palace of Versailles","ثقافة",35],["رحلة قوارب موش على السين","Bateaux Mouches","ترفيه",16]]}},
+"هولندا":{c:"Amsterdam",a:"أمستردام",
+h:[["ClinkNOORD",30,90],["Generator Amsterdam",30,90],["Stayokay Amsterdam Vondelpark",35,90],
+["ibis Amsterdam Centre",110,200],["Mercure Amsterdam City",140,250],["The Social Hub Amsterdam City",130,230],
+["Hotel V Nesplein",200,340],["Hotel Estherea",250,420],["Sir Albert Hotel",200,340],
+["De L'Europe Amsterdam",600,1100],["Waldorf Astoria Amsterdam",700,1300],["InterContinental Amstel Amsterdam",600,1100],
+["Citadines Prinsengracht Amsterdam",190,320],["SWEETS Hotel Amsterdam",200,330],["Zoku Amsterdam",180,300]],
+r:{luxury:[["Ciel Bleu","فرنسي حديث",250,MSN],["Bord'Eau","فرنسي",220],["Rijks","هولندي حديث",120]],
+budget:[["Foodhallen","قاعة طعام",18],["Albert Cuyp Market","سوق شوارع",10],["Febo","وجبات سريعة هولندية",6]],
+family:[["Pancakes Amsterdam","بانكيك",18],["The Pancake Bakery","بانكيك",20],["Moeders","هولندي منزلي",35]],
+corporate:[["Restaurant Greetje","هولندي",60],["Brasserie Harkema","براسري",45],["Vermeer","هولندي معاصر",90]]},
+x:{luxury:[["رحلة خاصة في قنوات أمستردام","Private canal cruise Amsterdam","ترفيه",120],["متحف ريكس","Rijksmuseum","ثقافة",25],["تسوّق في بي سي هوفتسترات","PC Hooftstraat Amsterdam","تسوق",0]],
+budget:[["جولة بالدراجة في المدينة","MacBike Amsterdam","استجمام",15],["متحف فان غوخ","Van Gogh Museum","ثقافة",22],["سوق ألبرت كوب","Albert Cuyp Market","تسوق",0]],
+family:[["متحف نيمو العلمي","NEMO Science Museum","ترفيه",18],["حدائق كيوكنهوف (موسمية)","Keukenhof","استجمام",22],["جولة قوارب القنوات","Amsterdam canal cruise","مغامرة",18]],
+corporate:[["منزل آن فرانك","Anne Frank House","ثقافة",16],["مصنع هاينكن إكسبيريانس","Heineken Experience","ترفيه",25],["حي يوردان","Jordaan Amsterdam","استجمام",0]]}},
+"سويسرا":{c:"Geneva",a:"جنيف",
+h:[["Geneva Hostel",40,90],["City Hostel Geneva",40,90],["Hôtel du Midi Geneva",130,220],
+["Hotel Edelweiss Geneva",190,300],["Hotel Longemalle Geneva",200,320],["Hôtel Cornavin Geneva",180,290],
+["Hotel N'vY Geneva",270,450],["Hotel Warwick Geneva",250,400],["Hôtel Rotary Geneva",240,400],
+["Four Seasons Hotel des Bergues Geneva",900,1500],["The Ritz-Carlton Hotel de la Paix Geneva",800,1400],["La Réserve Genève",1000,1800],
+["Fraser Suites Geneva",300,520],["Hôtel Les Armures Geneva",350,600],["Hotel Eden Geneva",230,390]],
+r:{luxury:[["Le Chat-Botté","فرنسي",200],["Il Lago (Four Seasons des Bergues)","إيطالي",180],["Bayview Restaurant Geneva","فرنسي حديث",190]],
+budget:[["Chez Ma Cousine","دجاج مشوي",20],["Marché de Plainpalais","سوق",15],["Migros Restaurant Geneva","مطعم خدمة ذاتية",15]],
+family:[["Café du Soleil","فوندو",55],["Les Armures Restaurant","فوندو",50],["La Cave Valaisanne","فوندو",55]],
+corporate:[["Brasserie Lipp Genève","براسري",65],["Le Parc des Eaux-Vives","فرنسي على البحيرة",95],["Café du Centre Geneva","براسري",60]]},
+x:{luxury:[["رحلة بحرية على بحيرة جنيف","CGN Lake Geneva boat","ترفيه",60],["متحف باتيك فيليب للساعات","Patek Philippe Museum","ثقافة",12],["جلسة سبا في لا ريزيرف","La Réserve Genève Spa","استجمام",250]],
+budget:[["نافورة جيت دو","Jet d'Eau Geneva","ترفيه",0],["كاتدرائية سان بيير والمدينة القديمة","Cathédrale Saint-Pierre Geneva","ثقافة",5],["الحديقة الإنجليزية والساعة الزهرية","Jardin Anglais Geneva","استجمام",0]],
+family:[["متحف التاريخ الطبيعي (مجاني)","Muséum d'histoire naturelle de Genève","ثقافة",0],["تلفريك جبل سالِف","Salève cable car Geneva","مغامرة",15],["رحلة بحرية إلى مونترو","Lake Geneva boat Montreux","ترفيه",45]],
+corporate:[["جولة مقر الأمم المتحدة","United Nations Office at Geneva","ثقافة",15],["متحف باتيك فيليب","Patek Philippe Museum","ثقافة",12],["جولة مسائية على كاي ويلسون","Quai Wilson Geneva","استجمام",0]]}},
+"النمسا":{c:"Vienna",a:"فيينا",
+h:[["a&o Wien Hauptbahnhof",25,70],["Wombats City Hostel Vienna Naschmarkt",25,80],["MEININGER Hotel Vienna Downtown Franz",40,100],
+["Hotel Kärntnerhof Vienna",150,240],["Hotel Pertschy Palais",140,230],["Motel One Wien-Staatsoper",130,220],
+["Hotel Daniel Vienna",150,260],["Hotel am Konzerthaus Vienna - MGallery",200,330],["Hotel Stefanie Vienna",150,260],
+["Hotel Imperial, a Luxury Collection Hotel, Vienna",700,1300],["Park Hyatt Vienna",600,1100],["Hotel Sacher Wien",600,1100],
+["Adagio Vienna City",160,260],["Hotel Sans Souci Wien",350,600],["Palais Coburg Residenz",600,1100]],
+r:{luxury:[["Steirereck","نمساوي حديث",250,MSN],["Konstantin Filippou","حديث",230,MSN],["Mraz & Sohn","نمساوي معاصر",200,MSN]],
+budget:[["Naschmarkt Vienna","سوق طعام",15],["Bitzinger Würstelstand","هوت دوغ نمساوي",8],["Figlmüller","شنيتزل",25]],
+family:[["Café Central Vienna","مقهى تاريخي",30],["Zum Schwarzen Kameel","ساندويتشات نمساوية",30],["Café Sacher Wien","كعكة زاخر",20]],
+corporate:[["Plachutta Wollzeile","تافلشبيتز",50],["Zum Weissen Rauchfangkehrer","نمساوي",60],["Café Landtmann","مقهى كلاسيكي",40]]},
+x:{luxury:[["أمسية في دار أوبرا فيينا","Vienna State Opera","ثقافة",150],["قصر شونبرون","Schönbrunn Palace","ثقافة",35],["تسوّق في شارع كارنتنر","Kärntner Straße Vienna","تسوق",0]],
+budget:[["قصر وحدائق بلفيدير","Belvedere Vienna","استجمام",0],["كاتدرائية القديس ستيفن","St. Stephen's Cathedral Vienna","ثقافة",6],["جزيرة الدانوب","Donauinsel Vienna","استجمام",0]],
+family:[["حديقة حيوان شونبرون","Tiergarten Schönbrunn","ترفيه",25],["عجلة براتر العملاقة","Wiener Riesenrad","مغامرة",15],["متحف التاريخ الطبيعي","Naturhistorisches Museum Wien","ثقافة",18]],
+corporate:[["قصر هوفبورغ","Hofburg Vienna","ثقافة",18],["حي المتاحف","MuseumsQuartier Wien","ثقافة",16],["حفل في موزيكفيراين","Vienna Musikverein","ثقافة",65]]}},
+"إيطاليا":{c:"Rome",a:"روما",
+h:[["The Yellow Hostel Rome",30,80],["Hostel Alessandro Palace Rome",30,85],["The RomeHello",30,80],
+["Hotel Nord Nuova Roma",120,210],["Hotel Condotti Rome",150,260],["Hotel Santa Maria Rome",150,250],
+["Hotel Artemide Rome",200,340],["Hotel Quirinale Rome",220,380],["Hotel Locarno Rome",240,420],
+["Hotel de Russie, a Rocco Forte Hotel",900,1700],["Hassler Roma",900,1600],["Hotel Eden Rome",900,1700],
+["Residenza di Ripetta",250,450],["Palazzo Navona Hotel",250,450],["Hotel Campo de' Fiori Rome",200,350]],
+r:{luxury:[["La Pergola","إيطالي",380,MSN],["Il Pagliaccio","إيطالي حديث",200,MSN],["Imàgo Hassler","إيطالي",230,MSN]],
+budget:[["Pizzarium Bonci","بيتزا بالشريحة",10],["Supplizio","أرانتشيني",8],["Trapizzino Testaccio","ساندويتش روماني",8]],
+family:[["Da Enzo al 29","روماني",35],["Pizzeria da Baffetto","بيتزا",20],["Giolitti Rome","جيلاتو",10]],
+corporate:[["Roscioli Salumeria con Cucina","إيطالي",60],["Armando al Pantheon","روماني",65],["Felice a Testaccio","روماني",50]]},
+x:{luxury:[["الفاتيكان: جولة بمرشد خاص","Vatican Museums","ثقافة",90],["تسوّق في فيا كوندوتي","Via Condotti Rome","تسوق",0],["أمسية أوبرا في حمّامات كاراكلا","Terme di Caracalla","ثقافة",100]],
+budget:[["الكولوسيوم والمنتدى الروماني","Colosseum Rome","ثقافة",20],["نافورة تريفي وساحة نافونا","Trevi Fountain","ترفيه",0],["البانثيون","Pantheon Rome","ثقافة",5]],
+family:[["الكولوسيوم (جولة عائلية)","Colosseum Rome","ثقافة",25],["حديقة فيلا بورغيزي","Villa Borghese Rome","استجمام",5],["متحف إكسبلورا للأطفال","Explora Il Museo dei Bambini di Roma","ترفيه",9]],
+corporate:[["متاحف الفاتيكان","Vatican Museums","ثقافة",25],["قلعة سانت أنجلو","Castel Sant'Angelo","ثقافة",16],["غروب من حديقة البرتقال","Giardino degli Aranci","استجمام",0]]}},
+"تركيا":{c:"Istanbul",a:"إسطنبول",
+h:[["Cheers Hostel Istanbul",20,50],["Marmara Guesthouse Istanbul",35,70],["Chillout Hostel Istanbul",15,40],
+["Hotel Amira Istanbul",70,130],["Hotel Sultania Istanbul",70,130],["Sultanahmet Palace Hotel",80,150],
+["White House Hotel Istanbul",100,180,TA+" 2026"],["Georges Hotel Galata",150,280],["Ibrahim Pasha Hotel",120,220],
+["Çırağan Palace Kempinski Istanbul",700,1400],["Mandarin Oriental Bosphorus Istanbul",700,1400],["Four Seasons Hotel Istanbul at Sultanahmet",500,900],
+["Pera Palace Hotel",250,450],["Les Ottomans Hotel Istanbul",600,1100],["Ajwa Hotel Sultanahmet",200,380]],
+r:{luxury:[["Mikla","تركي معاصر",180],["Nicole Restaurant","حديث",170],["Neolokal","تركي معاصر",130]],
+budget:[["Karaköy Güllüoğlu","بقلاوة",8],["Hafız Mustafa 1864","حلويات تركية",8],["Eminönü Balık Ekmek","ساندويتش سمك",6]],
+family:[["Hamdi Restaurant","كباب",35],["Pandeli Istanbul","تركي عثماني",40],["Karaköy Lokantası","تركي",35]],
+corporate:[["Zuma Istanbul","ياباني",90],["Ulus 29","تركي ومتوسطي",90],["Develi Restaurant Istanbul","كباب",30]]},
+x:{luxury:[["رحلة خاصة على البوسفور بيخت","Bosphorus private yacht cruise Istanbul","ترفيه",350],["حمّام تركي تقليدي","Çemberlitaş Hamamı","استجمام",60],["تسوّق في البازار الكبير","Grand Bazaar Istanbul","تسوق",0]],
+budget:[["آيا صوفيا","Hagia Sophia","ثقافة",27],["عبّارة البوسفور العامة","Şehir Hatları Bosphorus ferry Istanbul","ترفيه",3],["سوق البهارات المصري","Spice Bazaar Istanbul","تسوق",0]],
+family:[["قصر توبكابي","Topkapı Palace","ثقافة",35],["رحلة بوسفور بالقارب","Bosphorus Cruise Istanbul","ترفيه",20],["حديقة المصغّرات ميني أتورك","Miniaturk Istanbul","ترفيه",12]],
+corporate:[["المسجد الأزرق","Blue Mosque Istanbul","ثقافة",0],["برج غلطة","Galata Tower","ترفيه",25],["صهريج البازيليكا","Basilica Cistern","ثقافة",25]]}}
+};
+const mapU=(n,c)=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(n+" "+c),taU=(n,c)=>"https://www.tripadvisor.com/Search?q="+encodeURIComponent(n+" "+c);
+const lk=(n,c)=>`<a class="lk" href="${mapU(n,c)}" target="_blank" rel="noopener noreferrer">خرائط جوجل</a><a class="lk" href="${taU(n,c)}" target="_blank" rel="noopener noreferrer">TripAdvisor</a>`;
+function hotelsFor(dest,lv){return DST[dest].h.slice(lv*3,lv*3+3);}
+const hmid=h=>(h[1]+h[2])/2;
+function avgNight(dest,lv){const l=hotelsFor(dest,lv);return l.reduce((s,h)=>s+hmid(h),0)/3;}
+function lvRange(dest,lv){const l=hotelsFor(dest,lv);return [Math.min(...l.map(h=>h[1])),Math.max(...l.map(h=>h[2]))];}
+/* build itinerary: items per day with real venues, driven by travel mode + chosen interests */
+function buildPlan(b,mode){const d=DST[b.dest],c=d.c,lv=+b.stay,hs=hotelsFor(b.dest,lv),nights=Math.max(1,b.days-1),share=lv==0?1:2;
+const own=d.x[mode].slice(),rest=[];[NEXT[mode]].concat(MODES.filter(m=>m!=mode&&m!=NEXT[mode])).forEach(m=>d.x[m].forEach(a=>{if(![...own,...rest].some(z=>z[1]==a[1]))rest.push(a);}));
+const want=b.acts.filter(a=>a!="طعام"),pref=own.filter(a=>want.includes(a[2])),oth=own.filter(a=>!want.includes(a[2])),pref2=rest.filter(a=>want.includes(a[2])),oth2=rest.filter(a=>!want.includes(a[2]));
+const pool=(want.length?[...pref,...oth,...pref2,...oth2]:[...own,...rest]);
+const food=d.r[mode].concat(d.r[NEXT[mode]]),wantFood=b.acts.includes("طعام");
+const per=+b.pace+1,sl=["صباحاً","ظهراً","مساءً"];let ai=0,fi=0;const days=[];
+for(let i=0;i<b.days;i++){const it=[],first=i==0,last=i==b.days-1;
+if(first)it.push({k:"stay",t:"عند الوصول",n:hs[0][0],v:hs[0]});
+let n=first?(per>=3?1:0):last?(per>=2?1:0):per;
+for(let j=0;j<n;j++){const a=pool[ai++%pool.length];it.push({k:"act",t:sl[first||last?0:j],n:a[1],ar:a[0],cat:a[2],u:a[3],ex:!own.includes(a)});}
+if(wantFood&&!last){const r=food[fi++%food.length];it.push({k:"food",t:"عشاء",n:r[0],cu:r[1],u:r[2],tag:r[3]});}
+days.push({t:first?`الوصول إلى ${d.a}`:last?"اليوم الأخير والمغادرة":`استكشاف ${d.a}`,it});}
+const act=days.reduce((s,x)=>s+x.it.filter(y=>y.k=="act").reduce((q,y)=>q+y.u,0),0),fd=days.reduce((s,x)=>s+x.it.filter(y=>y.k=="food").reduce((q,y)=>q+y.u,0),0),ht=avgNight(b.dest,lv)*nights/share;
+return{days,hs,nights,share,c,a:d.a,act,fd,ht,tot:act+fd+ht,lv};}
+
 const AD={"التنقل من وإلى المطار":80,"تأمين السفر":60,"جولة يومية بمرشد":120,"جلسة سبا":90},TR=[["نُزل",25],["3 نجوم",85],["4 نجوم",150],["5 نجوم",340]];
-const S={p:"luxury",cur:"SAR",f:{d:"",dt:"",g:2,st:"any"},ti:0,sub:"",ad:{},b:{step:0,dest:"إيطاليا",days:5,pace:1,stay:"4 نجوم",acts:["ثقافة","طعام"],it:null}};
+const S={lm:"luxury",p:"luxury",cur:"SAR",f:{d:"",dt:"",g:2,st:"any"},ti:0,sub:"",ad:{},b:{step:0,dest:"إيطاليا",days:5,pace:1,stay:"2",acts:["ثقافة","طعام"],pl:null}};
 const fmt=n=>Math.round(n*RT[S.cur].r).toLocaleString("en-US")+" "+RT[S.cur].a;
 const stars=n=>"★".repeat(Math.round(n))+"☆".repeat(5-Math.round(n));
-function setP(id){S.p=id;const p=P[id],r=document.documentElement;for(const k in p.v)r.style.setProperty("--"+k,p.v[k]);r.style.setProperty("--r",p.r);r.style.setProperty("--g",p.g||"var(--ac)");r.style.colorScheme=p.cs;
+function setP(id){S.p=id;if(id!="education"){S.lm=id;if(S.b&&S.b.step==3&&S.b.pl)setTimeout(gen,0);}const p=P[id],r=document.documentElement;for(const k in p.v)r.style.setProperty("--"+k,p.v[k]);r.style.setProperty("--r",p.r);r.style.setProperty("--g",p.g||"var(--ac)");r.style.colorScheme=p.cs;
 $("#ps").innerHTML=Object.keys(P).map(k=>`<button role="radio" aria-checked="${k==id}" data-p="${k}">${P[k].n}</button>`).join("");
 $("#hx").innerHTML=`<h1>${p.h}</h1><p class="sub">${p.s}</p><ul class="tags">${p.b.map(x=>`<li>${x}</li>`).join("")}</ul><button class="btn" data-a="open">${p.c}</button>`;
 S.ti=0;$("#ed").hidden=id!="education";["bd","es","mp"].forEach(i=>{$("#"+i).hidden=id=="education";$('nav a[href="#'+i+'"]').hidden=id=="education";});$("#nved").hidden=id!="education";if(id=="education")S.f.st="education";else if(S.f.st=="education")S.f.st="any";$("#fs").innerHTML=`<option value="any">أي نمط</option>`+Object.keys(P).filter(k=>k!="education"||id=="education").map(k=>`<option value="${k}">${P[k].n}</option>`).join("");$("#fs").value=S.f.st;pk();mp();tm();}
@@ -273,15 +429,20 @@ m.innerHTML=`<div style="display:flex;justify-content:space-between;gap:12px"><h
 function bw(){const b=S.b,sn=["الوجهة","الوتيرة","الأنشطة","البرنامج"];
 const O=(a,sel,act,lab)=>`<div class="opts">${a.map(x=>`<button aria-pressed="${sel(x)}" data-a="${act}" data-v="${x}">${lab?lab(x):x}</button>`).join("")}</div>`;
 let h=`<div class="st">${sn.map((x,i)=>`<span class="${i==b.step?"on":""}">${i+1}. ${x}</span>`).join("")}</div>`;
-if(b.step==0)h+=`<b>إلى أين تذهب؟</b>`+O(D,x=>x==b.dest,"bd")+`<label style="max-width:280px">مدة الرحلة: ${b.days} أيام<input type="range" min="2" max="10" value="${b.days}" id="bdy"></label>`;
-if(b.step==1)h+=`<b>ما مدى امتلاء أيامك بالأنشطة؟</b>`+O(["0","1","2"],x=>x==b.pace,"bp",x=>["هادئ","متوازن","مكثف"][x])+`<b>أين تريد الإقامة؟</b>`+O(Object.keys(STY),x=>x==b.stay,"bs",x=>`${x} · ${fmt(STY[x])}/ليلة`);
-if(b.step==2)h+=`<b>ما الذي تستمتع به؟ اختر ما شئت.</b>`+O(Object.keys(ACT),x=>b.acts.includes(x),"ba");
-if(b.step==3&&b.it){const t=b.it.reduce((s,d)=>s+d.c,0);b.tot=t;h+=`<div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;margin-bottom:12px"><span>الميزانية التقديرية للشخص: <b>${fmt(t)}</b></span><button class="btn" data-a="bk">احجز البرنامج عبر واتساب</button></div>`+b.it.map((d,i)=>`<details${i?"":" open"}><summary><span>اليوم ${i+1}: ${d.t}</span><span class="mu">${fmt(d.c)}</span></summary><ul class="mu">${d.i.map(x=>`<li>${x}</li>`).join("")}</ul></details>`).join("");}
+if(b.step==0)h+=`<b>إلى أين تذهب؟</b>`+O(D,x=>x==b.dest,"bd",x=>`${x} — ${DST[x].a}`)+`<label style="max-width:280px">مدة الرحلة: ${b.days} أيام<input type="range" min="2" max="10" value="${b.days}" id="bdy"></label>`;
+if(b.step==1)h+=`<b>ما مدى امتلاء أيامك بالأنشطة؟</b>`+O(["0","1","2"],x=>x==b.pace,"bp",x=>["هادئ","متوازن","مكثف"][x])+`<b>أين تريد الإقامة؟</b>`+O(["0","1","2","3","4"],x=>x==b.stay,"bs",x=>{const r=lvRange(b.dest,+x);return `${LV[x]} · ${fmt(r[0])} – ${fmt(r[1])} لليلة`})+`<p class="mu" style="margin:-8px 0 8px;font-size:.85rem">أسعار تقريبية لفنادق مقترحة في ${DST[b.dest].a}.</p>`;
+if(b.step==2)h+=`<b>ما الذي تستمتع به؟ اختر ما شئت.</b>`+O(ACTS,x=>b.acts.includes(x),"ba");
+if(b.step==3&&b.pl){const p=b.pl,m=S.lm;b.tot=p.tot;
+const hc=h=>`<div class="card" style="padding:14px"><b>${h[0]}</b>${h[3]?` <span class="chip">${h[3]}</span>`:""}<div class="mu">${fmt(h[1])} – ${fmt(h[2])} لليلة (تقريباً)</div><div>${lk(h[0],p.c)}</div></div>`;
+const L=(ic,t,n,x,u,tag,ex,c)=>`<li style="margin-bottom:8px">${ic} <b>${t}:</b> ${x}${n?` <span class="mu">(${n})</span>`:""}${u!=null?` — ${u?fmt(u):"مجاني"}`:""}${tag?` <span class="chip">${tag}</span>`:""}${ex?` <span class="mu">· اقتراح إضافي</span>`:""}<br>${lk(n||x,c)}</li>`;
+h+=`<div class="two" style="align-items:center;margin-bottom:16px"><div><b>نمط السفر: ${P[m].n}</b><br><span class="mu">الفنادق والمطاعم والأنشطة تتغيّر مع النمط؛ غيّره من الشريط العلوي لتتحدّث الاقتراحات.</span></div><div><span class="mu">الميزانية التقديرية للشخص (دون الطيران)</span><div class="tot" style="font-size:2rem">${fmt(p.tot)}</div><span class="mu">الإقامة ${fmt(p.ht)} · الأنشطة ${fmt(p.act)} · المطاعم ${fmt(p.fd)}</span></div></div>`;
+h+=`<h3 style="margin:8px 0">أين تقيم: ${LV[p.lv]} في ${p.a}</h3><p class="mu" style="margin:0 0 8px;font-size:.85rem">${p.nights} ليالٍ، ${p.share==2?"بافتراض غرفة لشخصين":"سرير للشخص الواحد"}. الأسعار تقريبية ومتوسطة، وتتغير حسب الموسم والتواريخ.</p><div class="g" style="margin-bottom:16px">${p.hs.map(hc).join("")}</div>`;
+h+=`<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="btn" data-a="bk">احجز البرنامج عبر واتساب</button></div>`;
+h+=p.days.map((d,i)=>{const dc=d.it.reduce((s2,y)=>s2+(y.u||0),0);return `<details${i?"":" open"}><summary><span>اليوم ${i+1}: ${d.t}</span><span class="mu">${fmt(dc)}</span></summary><ul style="list-style:none;padding:8px 0 0;margin:0">${d.it.map(y=>y.k=="stay"?L("🏨",y.t,y.n,"الإقامة في "+y.n,null,y.v[3],0,p.c):y.k=="act"?L("🎟",y.t,y.n,y.ar,y.u,"",y.ex,p.c):L("🍽",y.t,y.n,y.n+" — "+y.cu,y.u,y.tag,0,p.c)).join("")}</ul></details>`}).join("");
+h+=`<p class="mu" style="font-size:.8rem;margin-top:12px">الأسعار تقريبية مبنية على معدلات منشورة وقت الإعداد؛ تحقّق من السعر الحالي عبر الروابط قبل الحجز. تشمل الإقامة والأنشطة والعشاء ولا تشمل الطيران. أسماء المطاعم والفنادق والتقييمات متاحة على خرائط جوجل وTripAdvisor.</p>`;}
 h+=`<div style="display:flex;justify-content:space-between;margin-top:16px"><button class="btn o" data-a="bb"${b.step?"":" disabled style=opacity:.4"}>رجوع</button>${b.step<2?`<button class="btn" data-a="bn">التالي</button>`:b.step==2?`<button class="btn" data-a="bg">أنشئ برنامج رحلتي</button>`:""}</div>`;
 $("#bw").innerHTML=h;}
-function gen(){const b=S.b,sl=["صباحاً","ظهراً","مساءً"],pool=b.acts.length?b.acts:["ثقافة"];
-b.it=Array.from({length:b.days},(_,i)=>{const pk=Array.from({length:+b.pace+1},(_,j)=>pool[(i+j)%pool.length]);
-return{t:i==0?`الوصول إلى ${b.dest}`:i==b.days-1?"اليوم الأخير والمغادرة":`استكشاف ${b.dest}`,i:pk.map((a,j)=>`${sl[j]}: تجربة ${a} في ${b.dest}`),c:STY[b.stay]+pk.reduce((s,a)=>s+ACT[a],0)}});b.step=3;bw();}
+function gen(){const b=S.b;b.pl=buildPlan(b,S.lm);b.step=3;bw();}
 function ea(){$("#ea").innerHTML=`<legend class="mu">إضافات (للمسافر الواحد)</legend>`+Object.keys(AD).map(k=>`<label style="font-weight:400"><input type="checkbox" data-ad="${k}" ${S.ad[k]?"checked":""}> ${k} · ${fmt(AD[k])}</label>`).join("");es();}
 function es(){const n=+$("#e1").value,d=+$("#e2").value,t=TR[$("#e3").value],rm=Math.ceil(n/2);$("#o1").textContent=n;$("#o2").textContent=d;$("#o3").textContent=t[0];
 const ex=Object.keys(AD).filter(k=>S.ad[k]).reduce((s,k)=>s+AD[k]*n,0),tot=t[1]*d*rm+ex+45*d*n+350*n;
@@ -309,9 +470,9 @@ else if(a=="g+"||a=="g-"){S.f.g=Math.min(12,Math.max(1,S.f.g+(a=="g+"?1:-1)));$(
 else if(a=="bd"){b.dest=v;bw();}else if(a=="bp"){b.pace=v;bw();}else if(a=="bs"){b.stay=v;bw();}
 else if(a=="ba"){b.acts=b.acts.includes(v)?b.acts.filter(x=>x!=v):[...b.acts,v];bw();}
 else if(a=="bn"){b.step++;bw();}else if(a=="bb"){b.step--;bw();}else if(a=="bg")gen();
-else if(a=="bk")op(`أرغب في حجز برنامج ${b.dest} لمدة ${b.days} أيام بميزانية تقديرية ${fmt(b.tot)} للشخص.`);
+else if(a=="bk")op(`أرغب في حجز برنامج ${b.dest} (${DST[b.dest].a}) لمدة ${b.days} أيام، نمط ${P[S.lm].n}، ${LV[b.stay]}: ${b.pl.hs.map(x=>x[0]).join("، ")}. الميزانية التقديرية ${fmt(b.tot)} للشخص دون الطيران.`);
 else if(a=="nx"||a=="pv"){const n=T.filter(x=>x[1]==S.p).length;S.ti=(S.ti+(a=="nx"?1:-1)+n)%n;tm();}});
-document.addEventListener("change",e=>{const t=e.target;if(t.id=="bdy"){S.b.days=+t.value;S.b.it=null;bw();}if(t.dataset.ad){S.ad[t.dataset.ad]=t.checked;es();}});
+document.addEventListener("change",e=>{const t=e.target;if(t.id=="bdy"){S.b.days=+t.value;S.b.pl=null;bw();}if(t.dataset.ad){S.ad[t.dataset.ad]=t.checked;es();}});
 document.addEventListener("keydown",e=>{if(e.key=="Escape")cl();});
 document.addEventListener("submit",e=>{e.preventDefault();const f=e.target,er=(el,m)=>{el.nextElementSibling.textContent=m;return !m};
 const ok=[er(f.n,f.n.value.trim().length<2?"أدخل اسمك الكامل.":""),er(f.e,/^\S+@\S+\.\S+$/.test(f.e.value)?"":"أدخل بريداً إلكترونياً صحيحاً، مثل name@example.com."),er(f.d,f.d.value?"":"اختر تاريخ السفر المفضل."),er(f.t,+f.t.value>=1&&+f.t.value<=50?"":"أدخل عدد مسافرين من 1 إلى 50.")].every(Boolean);if(!ok)return;

@@ -461,20 +461,27 @@ const dTxt=h=>{if(h==1.25)return"ساعة وربع";if(h==1.75)return"ساعة �
 const T2=m=>String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
 /* halal tier: 2 = mostly halal (Turkey), 1 = halal/vegetarian/seafood options likely, 0 = ask first */
 const HL1=/هندي|فلافل|كباب|تركي|عثماني|بيتزا|بانكيك|كريب|معجنات|بيغل|قهوة|حلويات|فطور|شوكولاتة|جيلاتو|سوق|قاعة طعام|دونات|سميط|بقلاوة|مقهى|معكرونة|نباتي|بحرية|سمك|فوندو|كافيتريا|كعك|حلال|شاورما|دورم|كفتة|أناضول|متوسطي|مخبوزات|تاكو|نودلز|تايلندي|فيتنامي|بطاطس|عثماني/;
-const halalTier=(cu,dest)=>dest=="تركيا"?2:HL1.test(cu)?1:0;
-const HLT=["اسأل عن الحلال","خيارات حلال/نباتية (تحقق)","لحوم حلال غالباً"];
-function mealList(dest,mode,kind,halal){const d=DST[dest],ii=kind=="b"?0:1,own=kind=="d"?d.r[mode]:MEALS[dest][mode][ii],nx=kind=="d"?d.r[NEXT[mode]]:MEALS[dest][NEXT[mode]][ii];
+const DIETS={halal:"حلال",veg:"نباتي",vegan:"نباتي صرف (Vegan)",gf:"خالٍ من الغلوتين",nosea:"بدون مأكولات بحرية"};
+const DT={halal:(cu,d)=>d=="تركيا"?2:HL1.test(cu)?1:0,
+veg:cu=>/نباتي|فلافل/.test(cu)?2:/بيتزا|معجنات|بيغل|قهوة|فطور|إيطالي|معكرونة|هندي|حلويات|بانكيك|متوسطي|تايلندي|سوق|قاعة|كافيتريا|سميط|بطاطس|تاكو|مخبوزات|فوندو|كريب|دونات|براسري|عالمي|حديث|معاصر|موسمي|مقهى/.test(cu)?1:0,
+vegan:cu=>/نباتي|فلافل/.test(cu)?2:/هندي|تايلندي|متوسطي|قهوة|سوق|قاعة|سميط|فطور|حديث|معاصر|موسمي|عالمي/.test(cu)?1:0,
+gf:cu=>/ستيك|شواء|كباب|كفتة|ياباني|بحرية|سمك|متوسطي|إسباني|مشويات/.test(cu)?1:0,
+nosea:cu=>/بحرية|ياباني|سمك|سوشي/.test(cu)?0:2};
+const dTier=(k,cu,d)=>DT[k](cu,d);
+const dChip=(k,t)=>k=="nosea"?(t==0?"يقدّم مأكولات بحرية":""):k=="halal"?["اسأل عن الحلال","خيارات حلال/نباتية (تحقق)","لحوم حلال غالباً"][t]:DIETS[k]+": "+["اسأل المطعم","خيارات متاحة غالباً","مناسب غالباً"][t];
+const dScore=(diet,cu,dest)=>diet.reduce((q,k)=>q+dTier(k,cu,dest),0);
+function mealList(dest,mode,kind,diet){const d=DST[dest],ii=kind=="b"?0:1,own=kind=="d"?d.r[mode]:MEALS[dest][mode][ii],nx=kind=="d"?d.r[NEXT[mode]]:MEALS[dest][NEXT[mode]][ii];
 let l=[...own,...nx].filter((v,i,a)=>a.findIndex(z=>z[0]==v[0])==i);
-if(halal)l=l.map((v,i)=>[v,i]).sort((p,q)=>halalTier(q[0][1],dest)-halalTier(p[0][1],dest)||p[1]-q[1]).map(p=>p[0]);
+if(diet.length)l=l.map((v,i)=>[v,i]).sort((p,q)=>dScore(diet,q[0][1],dest)-dScore(diet,p[0][1],dest)||p[1]-q[1]).map(p=>p[0]);
 return l;}
 /* timed itinerary: breakfast, activities (with durations), lunch, dinner; 30 min travel buffer between stops */
-function buildPlan(b,mode){const d=DST[b.dest],c=d.c,lv=+b.stay,hs=hotelsFor(b.dest,lv),nights=Math.max(1,b.days-1),share=lv==0?1:2,halal=!!b.halal;
+function buildPlan(b,mode){const d=DST[b.dest],c=d.c,lv=+b.stay,hs=hotelsFor(b.dest,lv),nights=Math.max(1,b.days-1),share=lv==0?1:2,diet=b.diet||[];
 const own=d.x[mode].slice(),rest=[];[NEXT[mode]].concat(MODES.filter(m=>m!=mode&&m!=NEXT[mode])).forEach(m=>d.x[m].forEach(a=>{if(![...own,...rest].some(z=>z[1]==a[1]))rest.push(a);}));
 const want=b.acts.filter(a=>a!="طعام"),pref=own.filter(a=>want.includes(a[2])),oth=own.filter(a=>!want.includes(a[2])),pref2=rest.filter(a=>want.includes(a[2])),oth2=rest.filter(a=>!want.includes(a[2]));
 const pool=(want.length?[...pref,...oth,...pref2,...oth2]:[...own,...rest]),wantFood=b.acts.includes("طعام");
-const B=mealList(b.dest,mode,"b",halal),Lh=mealList(b.dest,mode,"l",halal),Dn=mealList(b.dest,mode,"d",halal);
+const B=mealList(b.dest,mode,"b",diet),Lh=mealList(b.dest,mode,"l",diet),Dn=mealList(b.dest,mode,"d",diet);
 const maxA=+b.pace+1;let ai=0,bi=0,li=0,di=0;const days=[],used=new Set();
-const meal=(kind,list,i,t,dur)=>{const r=list[i%list.length];return{k:"food",m:kind,time:t,dur,n:r[0],cu:r[1],u:r[2],tag:r[3],hl:halalTier(r[1],b.dest)};};
+const meal=(kind,list,i,t,dur)=>{const r=list[i%list.length];return{k:"food",m:kind,time:t,dur,n:r[0],cu:r[1],u:r[2],tag:r[3],hl:diet.map(k=>[k,dTier(k,r[1],b.dest)])};};
 const nextAct=(maxH)=>{for(let k=0;k<pool.length;k++){const a=pool[(ai+k)%pool.length];if(!used.has(a[1])&&durOf(a[1])<=maxH){ai=(ai+k+1)%pool.length;used.add(a[1]);return a;}}for(let k=0;k<pool.length;k++){const a=pool[(ai+k)%pool.length];if(durOf(a[1])<=maxH){ai=(ai+k+1)%pool.length;return a;}}return null;};
 for(let i=0;i<b.days;i++){const it=[],first=i==0,last=i==b.days-1;let t=first?13*60:8*60,acts=0,lunch=false;if(i%Math.max(1,pool.length)==0)used.clear();
 if(first){it.push({k:"stay",time:T2(t),dur:0.5,n:hs[0][0],v:hs[0]});t+=60;}
@@ -491,10 +498,10 @@ if(wantFood&&!last)it.push(meal("d",Dn,di++,"19:30",1.75));
 it.sort((x,y)=>x.time<y.time?-1:x.time>y.time?1:0);
 days.push({t:first?`الوصول إلى ${d.a}`:last?"اليوم الأخير والمغادرة":`استكشاف ${d.a}`,it});}
 const sum=f=>days.reduce((s,x)=>s+x.it.filter(f).reduce((q,y)=>q+y.u,0),0),act=sum(y=>y.k=="act"),fd=sum(y=>y.k=="food"),ht=avgNight(b.dest,lv)*nights/share;
-return{days,hs,nights,share,c,a:d.a,act,fd,ht,tot:act+fd+ht,lv,halal};}
+return{days,hs,nights,share,c,a:d.a,act,fd,ht,tot:act+fd+ht,lv,diet};}
 
 const AD={"التنقل من وإلى المطار":80,"تأمين السفر":60,"جولة يومية بمرشد":120,"جلسة سبا":90},TR=[["نُزل",25],["3 نجوم",85],["4 نجوم",150],["5 نجوم",340]];
-const S={lm:"luxury",p:"luxury",cur:"SAR",f:{d:"",dt:"",g:2,st:"any"},ti:0,sub:"",ad:{},b:{step:0,dest:"إيطاليا",days:5,pace:1,stay:"2",acts:["ثقافة","طعام"],halal:false,pl:null}};
+const S={lm:"luxury",p:"luxury",cur:"SAR",f:{d:"",dt:"",g:2,st:"any"},ti:0,sub:"",ad:{},b:{step:0,dest:"إيطاليا",days:5,pace:1,stay:"2",acts:["ثقافة","طعام"],diet:[],pl:null}};
 const fmt=n=>Math.round(n*RT[S.cur].r).toLocaleString("en-US")+" "+RT[S.cur].a;
 const stars=n=>"★".repeat(Math.round(n))+"☆".repeat(5-Math.round(n));
 function setP(id){S.p=id;if(id!="education"){S.lm=id;if(S.b&&S.b.step==3&&S.b.pl)setTimeout(gen,0);}const p=P[id],r=document.documentElement;for(const k in p.v)r.style.setProperty("--"+k,p.v[k]);r.style.setProperty("--r",p.r);r.style.setProperty("--g",p.g||"var(--ac)");r.style.colorScheme=p.cs;
@@ -511,20 +518,20 @@ const O=(a,sel,act,lab)=>`<div class="opts">${a.map(x=>`<button aria-pressed="${
 let h=`<div class="st">${sn.map((x,i)=>`<span class="${i==b.step?"on":""}">${i+1}. ${x}</span>`).join("")}</div>`;
 if(b.step==0)h+=`<b>إلى أين تذهب؟</b>`+O(D,x=>x==b.dest,"bd",x=>`${x} — ${DST[x].a}`)+`<label style="max-width:280px">مدة الرحلة: ${b.days} أيام<input type="range" min="2" max="10" value="${b.days}" id="bdy"></label>`;
 if(b.step==1)h+=`<b>ما مدى امتلاء أيامك بالأنشطة؟</b>`+O(["0","1","2"],x=>x==b.pace,"bp",x=>["هادئ","متوازن","مكثف"][x])+`<b>أين تريد الإقامة؟</b>`+O(["0","1","2","3","4"],x=>x==b.stay,"bs",x=>{const r=lvRange(b.dest,+x);return `${LV[x]} · ${fmt(r[0])} – ${fmt(r[1])} لليلة`})+`<p class="mu" style="margin:-8px 0 8px;font-size:.85rem">أسعار تقريبية لفنادق مقترحة في ${DST[b.dest].a}.</p>`;
-if(b.step==2)h+=`<b>ما الذي تستمتع به؟ اختر ما شئت.</b>`+O(ACTS,x=>b.acts.includes(x),"ba")+`<b>تفضيلات الطعام</b><div class="opts"><button aria-pressed="${!!b.halal}" data-a="bh">🥩 أفضّل المطاعم الحلال</button></div><p class="mu" style="margin:-8px 0 8px;font-size:.85rem">عند التفعيل نقدّم المطاعم ذات الخيارات الحلال أولاً مع إشارة لكل مطعم؛ تحقّق من الحلال مع المطعم قبل الحجز.</p>`;
+if(b.step==2)h+=`<b>ما الذي تستمتع به؟ اختر ما شئت.</b>`+O(ACTS,x=>b.acts.includes(x),"ba")+`<b>القيود الغذائية (اختياري)</b>${O(Object.keys(DIETS),x=>b.diet.includes(x),"bh",x=>DIETS[x])}<p class="mu" style="margin:-8px 0 8px;font-size:.85rem">نقدّم المطاعم الأنسب أولاً مع إشارة لكل مطعم. لأي حساسية أخرى (مثل المكسرات) اذكرها لنا عند الحجز. تحقّق من المطعم مباشرة قبل الحجز.</p>`;
 if(b.step==3&&b.pl){const p=b.pl,m=S.lm;b.tot=p.tot;
 const hc=h=>`<div class="card" style="padding:14px"><b>${h[0]}</b>${h[3]?` <span class="chip">${h[3]}</span>`:""}<div class="mu">${fmt(h[1])} – ${fmt(h[2])} لليلة (تقريباً)</div><div>${lk(h[0],p.c)}</div></div>`;
 const L=(ic,t,n,x,u,tag,ex,c)=>`<li style="margin-bottom:8px">${ic} <b>${t}:</b> ${x}${n?` <span class="mu">(${n})</span>`:""}${u!=null?` — ${u?fmt(u):"مجاني"}`:""}${tag?` <span class="chip">${tag}</span>`:""}${ex?` <span class="mu">· اقتراح إضافي</span>`:""}<br>${lk(n||x,c)}</li>`;
 h+=`<div class="two" style="align-items:center;margin-bottom:16px"><div><b>نمط السفر: ${P[m].n}</b><br><span class="mu">الفنادق والمطاعم والأنشطة تتغيّر مع النمط؛ غيّره من الشريط العلوي لتتحدّث الاقتراحات.</span></div><div><span class="mu">الميزانية التقديرية للشخص (دون الطيران)</span><div class="tot" style="font-size:2rem">${fmt(p.tot)}</div><span class="mu">الإقامة ${fmt(p.ht)} · الأنشطة ${fmt(p.act)} · الوجبات ${fmt(p.fd)}</span></div></div>`;
 h+=`<h3 style="margin:8px 0">أين تقيم: ${LV[p.lv]} في ${p.a}</h3><p class="mu" style="margin:0 0 8px;font-size:.85rem">${p.nights} ليالٍ، ${p.share==2?"بافتراض غرفة لشخصين":"سرير للشخص الواحد"}. الأسعار تقريبية ومتوسطة، وتتغير حسب الموسم والتواريخ.</p><div class="g" style="margin-bottom:16px">${p.hs.map(hc).join("")}</div>`;
 h+=`<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="btn" data-a="bk">احجز البرنامج عبر واتساب</button></div>`;
-const ML={b:["☕","فطور"],l:["🍽","غداء"],d:["🌙","عشاء"]},hm=y=>p.halal?` <span class="chip">${HLT[y.hl]}</span>`:"";
+const ML={b:["☕","فطور"],l:["🍽","غداء"],d:["🌙","عشاء"]},hm=y=>(y.hl||[]).map(([k,t])=>dChip(k,t)).filter(Boolean).map(x=>` <span class="chip">${x}</span>`).join("");
 const TL=y=>{const t=`<span class="mu" style="display:inline-block;min-width:3.2em;direction:ltr;unicode-bidi:isolate"><b>${y.time}</b></span>`;
 if(y.k=="stay")return `<li style="margin-bottom:10px">${t} 🏨 <b>تسجيل الدخول:</b> ${y.n}${y.v[3]?` <span class="chip">${y.v[3]}</span>`:""}<br>${lk(y.n,p.c)}</li>`;
 if(y.k=="act")return `<li style="margin-bottom:10px">${t} 🎟 <b>${y.ar}</b> <span class="mu">(${y.n}) · المدة التقريبية: ${dTxt(y.dur)}</span> — ${y.u?fmt(y.u):"مجاني"}${y.ex?` <span class="mu">· اقتراح إضافي</span>`:""}<br>${lk(y.n,p.c)}</li>`;
 return `<li style="margin-bottom:10px">${t} ${ML[y.m][0]} <b>${ML[y.m][1]}:</b> ${y.n} <span class="mu">— ${y.cu} · المدة التقريبية: ${dTxt(y.dur)}${y.nt?" · أثناء الجولة":""}</span> — ${fmt(y.u)}${y.tag?` <span class="chip">${y.tag}</span>`:""}${hm(y)}<br>${lk(y.n,p.c)}</li>`;};
-h+=p.days.map((d,i)=>{const dc=d.it.reduce((s2,y)=>s2+(y.u||0),0);return `<details${i?"":" open"}><summary><span>اليوم ${i+1}: ${d.t}</span><span class="mu">${fmt(dc)}</span></summary><ul style="list-style:none;padding:8px 0 0;margin:0">${d.it.map(TL).join("")}</ul></details>`}).join("");
-h+=`<p class="mu" style="font-size:.8rem;margin-top:12px">الأسعار تقريبية مبنية على معدلات منشورة وقت الإعداد؛ تحقّق من السعر الحالي عبر الروابط قبل الحجز. تشمل الإقامة والأنشطة والوجبات (فطور وغداء وعشاء) ولا تشمل الطيران. الأوقات والمدد تقريبية وتتغيّر بحسب الازدحام والحجز المسبق؛ احتُسب نصف ساعة للتنقل بين المحطات. علامات الحلال تقديرية من معلوماتنا العامة وليست شهادة، فتأكد من المطعم مباشرة. أسماء المطاعم والفنادق والتقييمات متاحة على خرائط جوجل وTripAdvisor.</p>`;}
+h+=p.days.map((d,i)=>{const dc=d.it.reduce((s2,y)=>s2+(y.u||0),0);return `<details open><summary><span>اليوم ${i+1}: ${d.t}</span><span class="mu">${fmt(dc)}</span></summary><ul style="list-style:none;padding:8px 0 0;margin:0">${d.it.map(TL).join("")}</ul></details>`}).join("");
+h+=`<p class="mu" style="font-size:.8rem;margin-top:12px">الأسعار تقريبية مبنية على معدلات منشورة وقت الإعداد؛ تحقّق من السعر الحالي عبر الروابط قبل الحجز. تشمل الإقامة والأنشطة والوجبات (فطور وغداء وعشاء) ولا تشمل الطيران. الأوقات والمدد تقريبية وتتغيّر بحسب الازدحام والحجز المسبق؛ احتُسب نصف ساعة للتنقل بين المحطات. العلامات الغذائية (حلال/نباتي/غيرها) تقديرية من معلوماتنا العامة وليست شهادة، فتأكد من المطعم مباشرة. أسماء المطاعم والفنادق والتقييمات متاحة على خرائط جوجل وTripAdvisor.</p>`;}
 h+=`<div style="display:flex;justify-content:space-between;margin-top:16px"><button class="btn o" data-a="bb"${b.step?"":" disabled style=opacity:.4"}>رجوع</button>${b.step<2?`<button class="btn" data-a="bn">التالي</button>`:b.step==2?`<button class="btn" data-a="bg">أنشئ برنامج رحلتي</button>`:""}</div>`;
 $("#bw").innerHTML=h;}
 function gen(){const b=S.b;b.pl=buildPlan(b,S.lm);b.step=3;bw();}
@@ -553,9 +560,9 @@ if(c.dataset.p)return setP(c.dataset.p);if(c.dataset.k)return md(c.dataset.k);if
 if(a=="ec")ecGo(c.dataset.v);else if(a=="eq")eqq();else if(a=="open")op();else if(a=="close")cl();else if(a=="mc")$("#md").close();else if(a=="mo"){$("#md").close();op("أرغب في الاستفسار عن: "+S.pk.t);}
 else if(a=="g+"||a=="g-"){S.f.g=Math.min(12,Math.max(1,S.f.g+(a=="g+"?1:-1)));$("#go").textContent=S.f.g;pk();}
 else if(a=="bd"){b.dest=v;bw();}else if(a=="bp"){b.pace=v;bw();}else if(a=="bs"){b.stay=v;bw();}
-else if(a=="bh"){b.halal=!b.halal;bw();}else if(a=="ba"){b.acts=b.acts.includes(v)?b.acts.filter(x=>x!=v):[...b.acts,v];bw();}
+else if(a=="bh"){b.diet=b.diet.includes(v)?b.diet.filter(x=>x!=v):[...b.diet,v];bw();}else if(a=="ba"){b.acts=b.acts.includes(v)?b.acts.filter(x=>x!=v):[...b.acts,v];bw();}
 else if(a=="bn"){b.step++;bw();}else if(a=="bb"){b.step--;bw();}else if(a=="bg")gen();
-else if(a=="bk")op(`أرغب في حجز برنامج ${b.dest} (${DST[b.dest].a}) لمدة ${b.days} أيام، نمط ${P[S.lm].n}، ${LV[b.stay]}: ${b.pl.hs.map(x=>x[0]).join("، ")}${b.halal?"، مع تفضيل المطاعم الحلال":""}. الميزانية التقديرية ${fmt(b.tot)} للشخص دون الطيران.`);
+else if(a=="bk")op(`أرغب في حجز برنامج ${b.dest} (${DST[b.dest].a}) لمدة ${b.days} أيام، نمط ${P[S.lm].n}، ${LV[b.stay]}: ${b.pl.hs.map(x=>x[0]).join("، ")}${b.diet.length?"، القيود الغذائية: "+b.diet.map(x=>DIETS[x]).join("، "):""}. الميزانية التقديرية ${fmt(b.tot)} للشخص دون الطيران.`);
 else if(a=="nx"||a=="pv"){const n=T.filter(x=>x[1]==S.p).length;S.ti=(S.ti+(a=="nx"?1:-1)+n)%n;tm();}});
 document.addEventListener("change",e=>{const t=e.target;if(t.id=="bdy"){S.b.days=+t.value;S.b.pl=null;bw();}if(t.dataset.ad){S.ad[t.dataset.ad]=t.checked;es();}});
 document.addEventListener("keydown",e=>{if(e.key=="Escape")cl();});
